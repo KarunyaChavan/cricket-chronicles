@@ -1,34 +1,46 @@
+/**
+ * @file Pagination.css
+ * @description Styles for the navigation component, following BEM naming conventions.
+ * @module Pagination
+ */
+
 .pagination {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	gap: 1rem;
-	margin-top: 3rem;
-	padding-bottom: 3rem;
+	margin: 4rem 0 6rem;
 }
 
 .pagination__button {
-	background: var(--color-surface);
-	border: 1px solid var(--glass-border);
-	color: var(--color-text);
-	padding: 0.5rem 1rem;
-	border-radius: var(--radius-md);
+	background: var(--color-surface-low);
+	border: 1px solid var(--color-outline-variant);
+	color: var(--color-on-surface);
+	padding: 0.6rem 1.25rem;
+	border-radius: 8px;
 	cursor: pointer;
-	transition: var(--transition);
-	font-weight: 500;
+	transition: all 0.2s ease;
+	font-family: var(--font-headline);
+	font-weight: 700;
+	font-size: 0.8125rem;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
 }
 
 .pagination__button:disabled {
-	opacity: 0.5;
+	opacity: 0.4;
 	cursor: not-allowed;
 }
 
 .pagination__button:hover:not(:disabled) {
 	background: var(--color-primary);
-	color: var(--color-bg);
+	color: var(--color-on-primary);
+	border-color: var(--color-primary);
 }
 
 .pagination__info {
-	color: var(--color-text-muted);
+	color: var(--color-on-surface-variant);
+	font-family: var(--font-body);
 	font-size: 0.875rem;
+	font-weight: 500;
 }

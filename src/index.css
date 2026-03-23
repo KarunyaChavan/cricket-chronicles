@@ -1,7 +1,12 @@
+/**
+ * @file index.css
+ * @description Global styles, design tokens, and base layout utilities for the Cricket App.
+ * @module Global
+ */
+
 :root {
 	--color-bg: #0f172a;
 	--color-surface: rgba(30, 41, 59, 0.7);
-	--color-surface-hover: rgba(51, 65, 85, 0.9);
 	--color-primary: #38bdf8;
 	--color-secondary: #fbbf24;
 	--color-text: #f8fafc;
@@ -85,7 +90,6 @@ h3 {
 
 .player-card:hover {
 	transform: translateY(-5px);
-	background: var(--color-surface-hover);
 	border-color: var(--color-primary);
 }
 

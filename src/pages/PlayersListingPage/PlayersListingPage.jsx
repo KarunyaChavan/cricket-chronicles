@@ -2,14 +2,17 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { playerService } from '../../api/sportmonks'
-import Filters from '../../components/Filters'
+import Header from '../../components/Header/Header'
 import Pagination from '../../components/Pagination'
 import PlayerCard from '../../components/PlayerCard'
 import { useGlobalContext } from '../../context/useGlobalContext'
 import './PlayersListingPage.css'
 
 /** Number of players displayed per page */
-const PER_PAGE = 15
+const PER_PAGE = 12
+
+/** Position filter options matching the API's position.name values */
+const POSITION_FILTERS = ['All', 'Batsman', 'Bowler', 'Allrounder']
 
 /**
  * Sorts an array of player objects based on a sort key.
@@ -46,8 +49,29 @@ const filterByLastName = (data, query) => {
 }
 
 /**
+ * Filters players by position name.
+ * @param {Array} data - All players
+ * @param {string} position - Position name or 'All'
+ * @returns {Array} Filtered players
+ */
+const filterByPosition = (data, position) => {
+	if (!position || position === 'All') return data
+	return data.filter((p) => (p.position?.name || '').toLowerCase() === position.toLowerCase())
+}
+
+/**
+ * Filters players by country name.
+ * @param {Array} data - All players
+ * @param {string} country - Country name or 'All'
+ * @returns {Array} Filtered players
+ */
+const filterByCountry = (data, country) => {
+	if (!country || country === 'All') return data
+	return data.filter((p) => (p.country?.name || '') === country)
+}
+
+/**
  * Players listing page — fetches all players once, then filters/sorts/paginates client-side.
- * This is optimal for the SportMonks free API which ignores per_page and returns all data.
  * @returns {JSX.Element} The rendered listings page
  */
 const PlayersListingPage = () => {
@@ -55,16 +79,15 @@ const PlayersListingPage = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
 
 	const urlSearch = searchParams.get('search') || ''
-	const urlSort = searchParams.get('sort') || 'firstNameAsc'
+	const urlSort = searchParams.get('sort') || 'idAsc'
 	const urlPage = parseInt(searchParams.get('page'), 10) || 1
 	const urlPerPage = parseInt(searchParams.get('post_per_page'), 10) || PER_PAGE
+	const urlPosition = searchParams.get('position') || 'All'
+	const urlCountry = searchParams.get('country') || 'All'
 
-	/** All players fetched from the API — immutable after initial load */
 	const [allPlayers, setAllPlayers] = useState(playersCache || [])
 	const [loading, setLoading] = useState(playersCache && playersCache.length ? false : true)
 	const [error, setError] = useState('')
-
-	/** Controlled search input for immediate typing, debounced into URL */
 	const [inputValue, setInputValue] = useState(urlSearch)
 
 	const navigate = useNavigate()
@@ -72,7 +95,6 @@ const PlayersListingPage = () => {
 	/** Debounce search query into URL */
 	useEffect(() => {
 		if (inputValue === urlSearch) return
-
 		const handler = setTimeout(() => {
 			setSearchParams(
 				(prev) => {
@@ -84,7 +106,6 @@ const PlayersListingPage = () => {
 				{ replace: true },
 			)
 		}, 400)
-
 		return () => clearTimeout(handler)
 	}, [inputValue, setSearchParams, urlSearch])
 
@@ -111,24 +132,26 @@ const PlayersListingPage = () => {
 				if (!cancelled) {
 					const data = response.data || []
 
-					// Strip large objects to prevent LocalStorage QuotaExceededError (5MB limit)
+					// Strip to only fields needed on listing — avoids LocalStorage quota issues
 					const strippedData = data.map((p) => {
-						const strippedPlayer = {
+						const stripped = {
 							id: p.id,
 							fullname: p.fullname,
 							lastname: p.lastname,
 							image_path: p.image_path,
+							dateofbirth: p.dateofbirth || null,
 						}
 
 						if (p.country?.name) {
-							strippedPlayer.country = { name: p.country.name }
+							stripped.country = { name: p.country.name }
 						}
 
+						// position is embedded in root response — no include needed
 						if (p.position?.name) {
-							strippedPlayer.position = { name: p.position.name }
+							stripped.position = { name: p.position.name }
 						}
 
-						return strippedPlayer
+						return stripped
 					})
 
 					setAllPlayers(strippedData)
@@ -150,39 +173,47 @@ const PlayersListingPage = () => {
 			cancelled = true
 			controller.abort()
 		}
-	}, [playersCache, setPlayersCache]) // Run on mount or if cache setup changes
+	}, [playersCache, setPlayersCache])
 
-	/** Derived: filter + sort — zero network calls, runs in memory */
+	/** Derived: filter by country → filter by position → filter by last name → sort */
 	const filteredSorted = useMemo(
-		() => sortPlayers(filterByLastName(allPlayers, urlSearch), urlSort),
-		[allPlayers, urlSearch, urlSort],
+		() =>
+			sortPlayers(
+				filterByLastName(
+					filterByPosition(filterByCountry(allPlayers, urlCountry), urlPosition),
+					urlSearch,
+				),
+				urlSort,
+			),
+		[allPlayers, urlSearch, urlSort, urlPosition, urlCountry],
 	)
 
-	/** Derived: total pages based on filtered+sorted count */
+	const uniqueCountries = useMemo(() => {
+		const countries = new Set()
+		allPlayers.forEach((p) => {
+			if (p.country?.name) countries.add(p.country.name)
+		})
+		return ['All', ...Array.from(countries).sort()]
+	}, [allPlayers])
+
 	const totalPages = useMemo(
 		() => Math.max(1, Math.ceil(filteredSorted.length / urlPerPage)),
 		[filteredSorted.length, urlPerPage],
 	)
 
-	/** Derived: current page slice */
 	const players = useMemo(() => {
 		const start = (urlPage - 1) * urlPerPage
-		// For robustness, ensure we don't return an empty page if URL page is out of bounds
 		if (start >= filteredSorted.length && filteredSorted.length > 0) {
 			return filteredSorted.slice(0, urlPerPage)
 		}
 		return filteredSorted.slice(start, start + urlPerPage)
 	}, [filteredSorted, urlPage, urlPerPage])
 
-	const handleSearchChange = useCallback((query) => {
-		setInputValue(query)
-	}, [])
-
-	const handleSearchSubmit = useCallback(
-		(query) => {
+	const handlePositionFilter = useCallback(
+		(position) => {
 			setSearchParams((prev) => {
-				if (query) prev.set('search', query)
-				else prev.delete('search')
+				if (position === 'All') prev.delete('position')
+				else prev.set('position', position)
 				prev.set('page', '1')
 				return prev
 			})
@@ -191,9 +222,21 @@ const PlayersListingPage = () => {
 	)
 
 	const handleSortChange = useCallback(
-		(sort) => {
+		(e) => {
 			setSearchParams((prev) => {
-				prev.set('sort', sort)
+				prev.set('sort', e.target.value)
+				prev.set('page', '1')
+				return prev
+			})
+		},
+		[setSearchParams],
+	)
+
+	const handleCountryChange = useCallback(
+		(e) => {
+			setSearchParams((prev) => {
+				if (e.target.value === 'All') prev.delete('country')
+				else prev.set('country', e.target.value)
 				prev.set('page', '1')
 				return prev
 			})
@@ -220,39 +263,110 @@ const PlayersListingPage = () => {
 
 	return (
 		<div className="players-listing">
-			<Filters
-				searchQuery={inputValue}
-				onSearchChange={handleSearchChange}
-				onSearchSubmit={handleSearchSubmit}
-				sortBy={urlSort}
-				onSortChange={handleSortChange}
-			/>
+			<Header />
 
-			{error && <div className="error-message">{error}</div>}
-
-			{loading ? (
-				<div className="loading-spinner" />
-			) : (
-				<>
-					{players.length === 0 && !error ? (
-						<div className="no-results">No players found matching your criteria.</div>
-					) : (
-						<div className="player-grid">
-							{players.map((player) => (
-								<PlayerCard key={player.id} player={player} onClick={handlePlayerClick} />
-							))}
+			<main className="listing-main">
+				{/* Editorial Header + Search */}
+				<section className="listing-header">
+					<div className="listing-header__row">
+						<div>
+							<span className="listing-header__label">The Archives</span>
+							<p className="listing-header__title">
+								PLAYER <span className="listing-header__title-muted">CHRONICLES</span>
+							</p>
 						</div>
-					)}
+						<div className="listing-search">
+							<input
+								id="player-search"
+								type="text"
+								className="listing-search__input"
+								placeholder="Search by last name..."
+								value={inputValue}
+								onChange={(e) => setInputValue(e.target.value)}
+								aria-label="Search players by last name"
+							/>
+						</div>
+					</div>
+				</section>
 
-					{totalPages > 1 && (
-						<Pagination
-							currentPage={urlPage}
-							totalPages={totalPages}
-							onPageChange={handlePageChange}
-						/>
-					)}
-				</>
-			)}
+				{/* Position Filter Chips & Selectors */}
+				<section className="listing-filters" aria-label="Filters and Sorting">
+					<div className="listing-filters__row">
+						{POSITION_FILTERS.map((pos, idx) => (
+							<>
+								{idx === 1 && <div key="divider" className="listing-filters__divider" />}
+								<button
+									key={pos}
+									type="button"
+									className={`listing-filter-chip ${
+										urlPosition === pos || (pos === 'All' && urlPosition === 'All')
+											? 'listing-filter-chip--active'
+											: 'listing-filter-chip--inactive'
+									}`}
+									onClick={() => handlePositionFilter(pos)}
+									aria-pressed={urlPosition === pos || (pos === 'All' && urlPosition === 'All')}
+								>
+									{pos === 'All' ? 'SHOW ALL' : pos === 'Allrounder' ? 'All-rounder' : pos}
+								</button>
+							</>
+						))}
+					</div>
+
+					<div className="listing-dropdowns">
+						<select
+							value={urlSort}
+							onChange={handleSortChange}
+							className="listing-dropdowns__select"
+							aria-label="Sort players"
+						>
+							<option value="idAsc">Sort by ID (Low to High)</option>
+							<option value="idDesc">Sort by ID (High to Low)</option>
+							<option value="firstNameAsc">Sort by Name (A-Z)</option>
+							<option value="firstNameDesc">Sort by Name (Z-A)</option>
+						</select>
+						<select
+							value={urlCountry}
+							onChange={handleCountryChange}
+							className="listing-dropdowns__select"
+							aria-label="Filter by country"
+						>
+							{uniqueCountries.map((c) => (
+								<option key={c} value={c}>
+									{c === 'All' ? 'All Countries' : c}
+								</option>
+							))}
+						</select>
+					</div>
+				</section>
+
+				{/* Error */}
+				{error && <div className="error-message">{error}</div>}
+
+				{/* Content */}
+				{loading ? (
+					<div className="loading-spinner" />
+				) : (
+					<>
+						{players.length === 0 && !error ? (
+							<div className="no-results">No players found matching your criteria.</div>
+						) : (
+							<div className="player-grid">
+								{players.map((player) => (
+									<PlayerCard key={player.id} player={player} onClick={handlePlayerClick} />
+								))}
+							</div>
+						)}
+
+						{totalPages > 1 && (
+							<Pagination
+								currentPage={urlPage}
+								totalPages={totalPages}
+								onPageChange={handlePageChange}
+							/>
+						)}
+					</>
+				)}
+			</main>
 		</div>
 	)
 }
