@@ -1,0 +1,22 @@
+{
+	"extends": ["stylelint-config-standard", "stylelint-prettier/recommended"],
+	"rules": {
+		"selector-class-pattern": "^[a-z]([a-z0-9-]+)?(__[a-z0-9-]+)?(--[a-z0-9-]+)?$",
+		"media-feature-range-notation": "prefix",
+		"color-function-alias-notation": "with-alpha",
+		"color-function-notation": "legacy",
+		"alpha-value-notation": "number",
+		"font-family-name-quotes": "always-where-required",
+		"declaration-block-no-redundant-longhand-properties": true,
+		"no-descending-specificity": true,
+		"comment-empty-line-before": "always",
+		"at-rule-no-unknown": [
+			true,
+			{
+				"ignoreAtRules": ["tailwind", "apply", "variants", "responsive", "screen"]
+			}
+		],
+		"declaration-block-no-duplicate-properties": true,
+		"no-duplicate-selectors": true
+	}
+}

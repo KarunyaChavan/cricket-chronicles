@@ -1,0 +1,29 @@
+{
+	"app": {
+		"title": "Cricket Players",
+		"subtitle": "Discover the legends of the game"
+	},
+	"players": {
+		"searchHolder": "Search by last name...",
+		"filters": {
+			"country": "All Countries",
+			"position": "All Positions"
+		},
+		"sort": {
+			"label": "Sort by",
+			"firstNameAsc": "First Name (A-Z)",
+			"firstNameDesc": "First Name (Z-A)",
+			"idAsc": "ID (Low-High)",
+			"idDesc": "ID (High-Low)"
+		},
+		"notFound": "No players found matching your criteria."
+	},
+	"pagination": {
+		"previous": "Previous",
+		"next": "Next",
+		"page": "Page {{current}} of {{total}}"
+	},
+	"error": {
+		"fetch": "Failed to load players. Please try again later."
+	}
+}
