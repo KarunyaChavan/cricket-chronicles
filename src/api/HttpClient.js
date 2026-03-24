@@ -35,11 +35,13 @@ class HttpClient {
 		const finalUrl = url.toString().replace(/%2C/g, ',')
 
 		try {
+			if (signal?.aborted) return null
+
 			const response = await fetch(finalUrl, { signal })
 
 			if (!response.ok) {
 				const text = await response.text()
-				let errorMsg = `HTTP error! status: ${response.status}`
+				let errorMsg = `HTTP error! status: ${response.status} at ${endpoint}`
 				try {
 					const errorData = JSON.parse(text)
 					const rawMsg = errorData.message || errorData.error || errorMsg
@@ -52,7 +54,9 @@ class HttpClient {
 
 			return await response.json()
 		} catch (error) {
-			console.error(`HttpClient GET Error [${endpoint}]:`, error.message)
+			if (error.name === 'AbortError') throw error // Rethrow to let useQuery handle it quietly
+
+			console.error(`HttpClient GET Error [${endpoint}]:`, error.message, '| URL:', finalUrl)
 			throw error
 		}
 	}

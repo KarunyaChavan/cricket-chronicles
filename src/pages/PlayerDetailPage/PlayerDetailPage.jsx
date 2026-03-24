@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { playerService } from '../../api/sportmonks'
@@ -133,34 +134,24 @@ const TABS = ['Stats', 'Bio', 'Teams']
 const PlayerDetailPage = () => {
 	const { id } = useParams()
 
-	const [player, setPlayer] = useState(null)
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState('')
 	const [activeTab, setActiveTab] = useState('Stats')
 
-	useEffect(() => {
-		const controller = new AbortController()
+	const {
+		data: player = null,
+		isLoading,
+		isError,
+		error: queryError,
+	} = useQuery({
+		queryKey: ['player', id],
+		queryFn: async ({ signal }) => {
+			const response = await playerService.getPlayerById(id, undefined, { signal })
+			return response.data || null
+		},
+		enabled: !!id,
+		staleTime: 1000 * 60 * 30, // 30 minutes
+	})
 
-		const fetchPlayer = async () => {
-			setLoading(true)
-			setError('')
-			try {
-				const response = await playerService.getPlayerById(id, undefined, {
-					signal: controller.signal,
-				})
-				setPlayer(response.data || null)
-			} catch (err) {
-				if (err.name === 'AbortError') return
-				setError('Failed to load player details.')
-				console.error(err)
-			} finally {
-				setLoading(false)
-			}
-		}
-
-		if (id) fetchPlayer()
-		return () => controller.abort()
-	}, [id])
+	const error = isError ? queryError?.message || 'Failed to load player details.' : ''
 
 	/** Unique career format types from the API response */
 	const careerTypes = useMemo(() => {
@@ -185,7 +176,7 @@ const PlayerDetailPage = () => {
 		})
 	}, [player])
 
-	if (loading) return <div className="loading-spinner" />
+	if (isLoading) return <div className="loading-spinner" />
 	if (error) return <div className="error-message">{error}</div>
 	if (!player) return <div className="no-results">Player not found</div>
 

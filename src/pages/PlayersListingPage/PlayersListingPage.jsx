@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect, useMemo, useCallback, Fragment } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { playerService } from '../../api/sportmonks'
 import Header from '../../components/Header/Header'
 import Pagination from '../../components/Pagination'
 import PlayerCard from '../../components/PlayerCard'
-import { useGlobalContext } from '../../context/useGlobalContext'
 import './PlayersListingPage.css'
 
 /** Number of players displayed per page */
@@ -31,6 +31,10 @@ const sortPlayers = (data, sortKey) =>
 				return a.id - b.id
 			case 'idDesc':
 				return b.id - a.id
+			case 'updatedAtDesc':
+				return new Date(b.updated_at || 0) - new Date(a.updated_at || 0)
+			case 'updatedAtAsc':
+				return new Date(a.updated_at || 0) - new Date(b.updated_at || 0)
 			default:
 				return 0
 		}
@@ -71,11 +75,21 @@ const filterByCountry = (data, country) => {
 }
 
 /**
+ * Filters players by career tournament type.
+ * @param {Array} data - All players
+ * @param {string} type - Tournament type or 'All'
+ * @returns {Array} Filtered players
+ */
+const filterByCareerType = (data, type) => {
+	if (!type || type === 'All') return data
+	return data.filter((p) => (p.careerTypes || []).includes(type))
+}
+
+/**
  * Players listing page — fetches all players once, then filters/sorts/paginates client-side.
  * @returns {JSX.Element} The rendered listings page
  */
 const PlayersListingPage = () => {
-	const { playersCache, setPlayersCache } = useGlobalContext()
 	const [searchParams, setSearchParams] = useSearchParams()
 
 	const urlSearch = searchParams.get('search') || ''
@@ -84,13 +98,49 @@ const PlayersListingPage = () => {
 	const urlPerPage = parseInt(searchParams.get('post_per_page'), 10) || PER_PAGE
 	const urlPosition = searchParams.get('position') || 'All'
 	const urlCountry = searchParams.get('country') || 'All'
+	const urlCareerType = searchParams.get('career_type') || 'All'
 
-	const [allPlayers, setAllPlayers] = useState(playersCache || [])
-	const [loading, setLoading] = useState(playersCache && playersCache.length ? false : true)
-	const [error, setError] = useState('')
 	const [inputValue, setInputValue] = useState(urlSearch)
 
 	const navigate = useNavigate()
+
+	const {
+		data: allPlayers = [],
+		isLoading,
+		isError,
+		error: queryError,
+	} = useQuery({
+		queryKey: ['players'],
+		queryFn: async ({ signal }) => {
+			const response = await playerService.getPlayers({ include: 'country,career', signal })
+			const rawData = response.data || []
+
+			// Transform data directly in queryFn as requested
+			return rawData.map((p) => {
+				const stripped = {
+					id: p.id,
+					fullname: p.fullname,
+					lastname: p.lastname,
+					image_path: p.image_path,
+					dateofbirth: p.dateofbirth || null,
+					updated_at: p.updated_at || null,
+					careerTypes: p.career ? [...new Set(p.career.map((c) => c.type))] : [],
+				}
+				if (p.country?.name) {
+					stripped.country = { name: p.country.name }
+				}
+				if (p.position?.name) {
+					stripped.position = { name: p.position.name }
+				}
+				return stripped
+			})
+		},
+		staleTime: 1000 * 60 * 60, // 1 hour
+	})
+
+	const error = isError
+		? queryError?.message || 'Failed to load players. Please try again later.'
+		: ''
 
 	/** Debounce search query into URL */
 	useEffect(() => {
@@ -114,78 +164,20 @@ const PlayersListingPage = () => {
 		setInputValue(urlSearch)
 	}, [urlSearch])
 
-	/** Fetch all players exactly once on mount */
-	useEffect(() => {
-		let cancelled = false
-		const controller = new AbortController()
-
-		const fetchAll = async () => {
-			if (playersCache && playersCache.length > 0) {
-				setLoading(false)
-				return
-			}
-
-			setLoading(true)
-			setError('')
-			try {
-				const response = await playerService.getPlayers({ signal: controller.signal })
-				if (!cancelled) {
-					const data = response.data || []
-
-					// Strip to only fields needed on listing — avoids LocalStorage quota issues
-					const strippedData = data.map((p) => {
-						const stripped = {
-							id: p.id,
-							fullname: p.fullname,
-							lastname: p.lastname,
-							image_path: p.image_path,
-							dateofbirth: p.dateofbirth || null,
-						}
-
-						if (p.country?.name) {
-							stripped.country = { name: p.country.name }
-						}
-
-						// position is embedded in root response — no include needed
-						if (p.position?.name) {
-							stripped.position = { name: p.position.name }
-						}
-
-						return stripped
-					})
-
-					setAllPlayers(strippedData)
-					setPlayersCache(strippedData)
-				}
-			} catch (err) {
-				if (err.name === 'AbortError') return
-				if (!cancelled) {
-					setError(err.message || 'Failed to load players. Please try again later.')
-					console.error(err)
-				}
-			} finally {
-				if (!cancelled) setLoading(false)
-			}
-		}
-
-		fetchAll()
-		return () => {
-			cancelled = true
-			controller.abort()
-		}
-	}, [playersCache, setPlayersCache])
-
 	/** Derived: filter by country → filter by position → filter by last name → sort */
 	const filteredSorted = useMemo(
 		() =>
 			sortPlayers(
 				filterByLastName(
-					filterByPosition(filterByCountry(allPlayers, urlCountry), urlPosition),
+					filterByPosition(
+						filterByCountry(filterByCareerType(allPlayers, urlCareerType), urlCountry),
+						urlPosition,
+					),
 					urlSearch,
 				),
 				urlSort,
 			),
-		[allPlayers, urlSearch, urlSort, urlPosition, urlCountry],
+		[allPlayers, urlSearch, urlSort, urlPosition, urlCountry, urlCareerType],
 	)
 
 	const uniqueCountries = useMemo(() => {
@@ -194,6 +186,16 @@ const PlayersListingPage = () => {
 			if (p.country?.name) countries.add(p.country.name)
 		})
 		return ['All', ...Array.from(countries).sort()]
+	}, [allPlayers])
+
+	const uniqueCareerTypes = useMemo(() => {
+		const types = new Set()
+		allPlayers.forEach((p) => {
+			if (p.careerTypes) p.careerTypes.forEach((t) => {
+				if (t && t.trim()) types.add(t)
+			})
+		})
+		return ['All', ...Array.from(types).sort()]
 	}, [allPlayers])
 
 	const totalPages = useMemo(
@@ -237,6 +239,18 @@ const PlayersListingPage = () => {
 			setSearchParams((prev) => {
 				if (e.target.value === 'All') prev.delete('country')
 				else prev.set('country', e.target.value)
+				prev.set('page', '1')
+				return prev
+			})
+		},
+		[setSearchParams],
+	)
+
+	const handleCareerTypeChange = useCallback(
+		(e) => {
+			setSearchParams((prev) => {
+				if (e.target.value === 'All') prev.delete('career_type')
+				else prev.set('career_type', e.target.value)
 				prev.set('page', '1')
 				return prev
 			})
@@ -293,7 +307,7 @@ const PlayersListingPage = () => {
 				<section className="listing-filters" aria-label="Filters and Sorting">
 					<div className="listing-filters__row">
 						{POSITION_FILTERS.map((pos, idx) => (
-							<>
+							<Fragment key={pos}>
 								{idx === 1 && <div key="divider" className="listing-filters__divider" />}
 								<button
 									key={pos}
@@ -308,7 +322,7 @@ const PlayersListingPage = () => {
 								>
 									{pos === 'All' ? 'SHOW ALL' : pos === 'Allrounder' ? 'All-rounder' : pos}
 								</button>
-							</>
+							</Fragment>
 						))}
 					</div>
 
@@ -323,6 +337,8 @@ const PlayersListingPage = () => {
 							<option value="idDesc">Sort by ID (High to Low)</option>
 							<option value="firstNameAsc">Sort by Name (A-Z)</option>
 							<option value="firstNameDesc">Sort by Name (Z-A)</option>
+							<option value="updatedAtDesc">Recently Updated (Newest)</option>
+							<option value="updatedAtAsc">Recently Updated (Oldest)</option>
 						</select>
 						<select
 							value={urlCountry}
@@ -336,6 +352,18 @@ const PlayersListingPage = () => {
 								</option>
 							))}
 						</select>
+						<select
+							value={urlCareerType}
+							onChange={handleCareerTypeChange}
+							className="listing-dropdowns__select"
+							aria-label="Filter by tournament type"
+						>
+							{uniqueCareerTypes.map((t) => (
+								<option key={t} value={t}>
+									{t === 'All' ? 'All Formats' : t}
+								</option>
+							))}
+						</select>
 					</div>
 				</section>
 
@@ -343,7 +371,7 @@ const PlayersListingPage = () => {
 				{error && <div className="error-message">{error}</div>}
 
 				{/* Content */}
-				{loading ? (
+				{isLoading ? (
 					<div className="loading-spinner" />
 				) : (
 					<>
