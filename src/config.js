@@ -4,7 +4,6 @@
  */
 export const config = {
 	api: {
-		token: import.meta.env.VITE_SPORTMONKS_API_TOKEN,
 		baseUrl: import.meta.env.VITE_SPORTMONKS_BASE_URL,
 	},
 	app: {

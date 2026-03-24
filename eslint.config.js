@@ -94,5 +94,16 @@ export default [
 			],
 		},
 	},
+	{
+		files: ['server.js'],
+		languageOptions: {
+			globals: {
+				...globals.node,
+			},
+		},
+		rules: {
+			'no-console': 'off',
+		},
+	},
 	prettierConfig,
 ]

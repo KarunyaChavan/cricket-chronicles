@@ -5,9 +5,8 @@ import { config } from '../config'
  * Follows Single Responsibility Principle
  */
 class HttpClient {
-	constructor(baseURL, apiToken) {
+	constructor(baseURL) {
 		this.baseURL = baseURL
-		this.apiToken = apiToken
 	}
 
 	/**
@@ -23,8 +22,7 @@ class HttpClient {
 		const base = this.baseURL.startsWith('/') ? window.location.origin + this.baseURL : this.baseURL
 		const url = new URL(`${base}/${endpoint}`)
 
-		// Add authentication token and params
-		url.searchParams.append('api_token', this.apiToken)
+		// Add params
 		Object.entries(params).forEach(([key, value]) => {
 			if (value || value === 0 || value === false) {
 				url.searchParams.append(key, value)
@@ -63,4 +61,4 @@ class HttpClient {
 }
 
 // Create a singleton instance for SportMonks API
-export const sportmonksClient = new HttpClient(config.api.baseUrl, config.api.token)
+export const sportmonksClient = new HttpClient(config.api.baseUrl)
