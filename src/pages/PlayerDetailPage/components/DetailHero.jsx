@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { useNavigate } from 'react-router-dom'
 
 /**
  * Renders the top hero section of the player detail page.
@@ -8,6 +9,7 @@ import PropTypes from 'prop-types'
  * @returns {JSX.Element} The rendered hero section.
  */
 const DetailHero = ({ player, overallStats }) => {
+	const navigate = useNavigate()
 	const role = player.position?.name?.toLowerCase() || ''
 
 	const getHeroMetrics = () => {
@@ -74,12 +76,22 @@ const DetailHero = ({ player, overallStats }) => {
 				<div className="detail-hero__header">
 					<div className="detail-hero__badges">
 						{player.country?.name && (
-							<span className="detail-hero__badge detail-hero__country">{player.country.name}</span>
+							<button
+								type="button"
+								className="detail-hero__badge detail-hero__country"
+								onClick={() => navigate(`/?country=${encodeURIComponent(player.country.name)}`)}
+							>
+								{player.country.name}
+							</button>
 						)}
 						{player.position?.name && (
-							<span className="detail-hero__badge detail-hero__position">
+							<button
+								type="button"
+								className="detail-hero__badge detail-hero__position"
+								onClick={() => navigate(`/?position=${encodeURIComponent(player.position.name)}`)}
+							>
 								{player.position.name}
-							</span>
+							</button>
 						)}
 					</div>
 					<h1 className="detail-hero__name">{player.fullname}</h1>

@@ -132,6 +132,22 @@ const PlayersListingPage = () => {
 		[setSearchParams],
 	)
 
+	const activeFiltersTexts = []
+	if (urlPosition !== 'All') {
+		activeFiltersTexts.push(urlPosition === 'Allrounder' ? 'All-rounder' : urlPosition)
+	}
+	if (urlCountry !== 'All') activeFiltersTexts.push(urlCountry)
+	if (urlCareerType !== 'All') activeFiltersTexts.push(urlCareerType)
+
+	let headerLabel = 'The Archives'
+	if (urlSearch && activeFiltersTexts.length > 0) {
+		headerLabel = `Search: "${urlSearch}" • ${activeFiltersTexts.join(' • ')}`
+	} else if (urlSearch) {
+		headerLabel = `Search: "${urlSearch}"`
+	} else if (activeFiltersTexts.length > 0) {
+		headerLabel = `Showing: ${activeFiltersTexts.join(' • ')}`
+	}
+
 	return (
 		<div className="players-listing">
 			<Header />
@@ -139,7 +155,7 @@ const PlayersListingPage = () => {
 				<section className="listing-header">
 					<div className="listing-header__row">
 						<div>
-							<span className="listing-header__label">The Archives</span>
+							<span className="listing-header__label">{headerLabel}</span>
 							<p className="listing-header__title">
 								PLAYER <span className="listing-header__title-muted">CHRONICLES</span>
 							</p>

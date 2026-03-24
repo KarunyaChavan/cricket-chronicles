@@ -168,6 +168,19 @@
 	border-radius: 999px;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
+	border: none;
+	cursor: pointer;
+	transition:
+		opacity 0.2s,
+		transform 0.1s;
+}
+
+.detail-hero__badge:hover {
+	opacity: 0.85;
+}
+
+.detail-hero__badge:active {
+	transform: scale(0.95);
 }
 
 .detail-hero__country {
