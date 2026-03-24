@@ -160,17 +160,31 @@ const PlayersListingPage = () => {
 								PLAYER <span className="listing-header__title-muted">CHRONICLES</span>
 							</p>
 						</div>
-						<div className="listing-search">
+						<form
+							className="listing-search"
+							onSubmit={(e) => {
+								e.preventDefault()
+								setSearchParams(
+									(prev) => {
+										if (inputValue) prev.set('search', inputValue)
+										else prev.delete('search')
+										prev.set('page', '1')
+										return prev
+									},
+									{ replace: true },
+								)
+							}}
+						>
 							<input
 								id="player-search"
-								type="text"
+								type="search"
 								className="listing-search__input"
 								placeholder="Search by last name..."
 								value={inputValue}
 								onChange={(e) => setInputValue(e.target.value)}
 								aria-label="Search players"
 							/>
-						</div>
+						</form>
 					</div>
 				</section>
 
