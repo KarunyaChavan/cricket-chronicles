@@ -1,46 +1,63 @@
-# Cricket Directory Application
+# Cricket Chronicles
 
-A React + Vite application to browse cricket players, view player details, and filter/sort data with client-side pagination.
+A modern, high-performance web application designed to explore the world of cricket through detailed player profiles, aggregated career statistics, and a secure, mobile-first experience.
 
-## Setup
+## Product Overview
 
-1. Install dependencies
+**Cricket Chronicles** provides a seamless interface for fans, analysts, and scouts to discover and deep-dive into player data. Whether you're tracking international stars or emerging talent, the app offers a premium browsing experience.
 
+### Key Features (User Experience)
+- **Global Player Directory**: Explore a comprehensive database of players from teams worldwide.
+- **Performance Insights**: Instant access to detailed batting and bowling statistics categorized by format (ODI, T20, Test).
+- **Intelligent Search & Filtering**: Rapidly find players by name, country, position, or team with zero-latency client-side interaction.
+- **Premium Mobile-First Design**: A stunning, responsive interface featuring glassmorphism, smooth transitions, and high-legibility typography optimized for any device.
+
+---
+
+## Technical Architecture
+
+For developers and engineers, this project demonstrates a modern frontend stack with a strong focus on **Security**, **Maintainability**, and **Performance**.
+
+### 1. BFF (Backend-For-Frontend) Proxy
+For production-grade security, we implement a **BFF Architecture** using Express.js. This prevents the `SPORTMONKS_API_TOKEN` from being exposed in client-side bundles. The server acts as a secure middleware that injects the required tokens server-side.
+
+
+### 2. Core Tech Stack
+- **Frontend**: React + Vite + i18next (Internationalization)
+- **Server**: Express.js + http-proxy-middleware
+- **API**: Sportmonks Cricket API
+
+---
+
+## Getting Started
+
+### 1. Installation
+Clone the repository and install dependencies:
 ```bash
 npm install
 ```
 
-2. Configure environment variables in `.env`:
-
+### 2. Configuration
+Create a `.env` file in the root directory:
 ```env
-VITE_SPORTMONKS_API_TOKEN=your_token
-VITE_SPORTMONKS_BASE_URL=https://api.sportmonks.com/v2.0
-VITE_DEFAULT_LANGUAGE=en
+# sportmonks.com API Token (Server-side ONLY)
+SPORTMONKS_API_TOKEN=your_token_here
+SPORTMONKS_BASE_URL=https://cricket.sportmonks.com/api/v2.0
+DEFAULT_LANGUAGE=en
+PORT=3000
 ```
 
-3. Run development server
-
+### 3. Development
+Run the development server with secure local proxying:
 ```bash
 npm run dev
 ```
 
-## Scripts
+### 4. Production
+Build and serve the production bundle through the BFF server:
+```bash
+npm run build
+node server.js
+```
 
-- `npm run dev` - Run local development server
-- `npm run build` - Build production assets
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run stylelint` - Run Stylelint on CSS
-- `npm run lint:all` - Run ESLint + Stylelint
-- `npm run format` - Format source files with Prettier
-- `npm run format:check` - Verify formatting without modifying files
-
-## Code Quality
-
-- ESLint enforces React, hooks, accessibility, imports, and Prettier rules.
-- Stylelint enforces CSS consistency and duplicate selector/property checks.
-- `lint-staged` runs ESLint, Stylelint, and Prettier on staged files through the pre-commit hook.
-
-## Notes
-
-- API tokens in frontend apps are visible to end users. For production, proxy external API calls through a backend service.
+---

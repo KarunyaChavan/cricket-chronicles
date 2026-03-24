@@ -48,7 +48,10 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-/* Typography */
+/**
+ * Typography
+ * Defines the base font styles for the application.
+ */
 h1,
 h2,
 h3 {
@@ -59,7 +62,10 @@ h3 {
 	letter-spacing: -0.025em;
 }
 
-/* Global Utility Classes */
+/**
+ * Global Utility Classes
+ * Reusable layout and status indicators.
+ */
 .sr-only {
 	position: absolute;
 	width: 1px;

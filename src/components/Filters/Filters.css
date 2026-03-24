@@ -1,3 +1,13 @@
+/**
+ * @file Filters.css
+ * @description Reusable filter bar component for organizing list data.
+ * @module Filters
+ */
+
+/**
+ * Filters
+ * Flex container for search and selection inputs.
+ */
 .filters {
 	background: var(--color-surface);
 	border-radius: var(--radius-md);

@@ -4,6 +4,11 @@
  * @module Header
  */
 
+/**
+ * App Header
+ * Fixed navigation container with glass effect.
+ */
+
 .app-header {
 	position: fixed;
 	top: 0;

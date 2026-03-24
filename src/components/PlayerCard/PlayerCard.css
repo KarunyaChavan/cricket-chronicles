@@ -4,7 +4,10 @@
  * @module PlayerCard
  */
 
-/* ===== Player Card ===== */
+/**
+ * Player Card
+ * Root container for summary player information.
+ */
 .player-card {
 	position: relative;
 	display: block;
@@ -27,7 +30,10 @@
 	transform: translateY(-2px);
 }
 
-/* ===== Image Container ===== */
+/**
+ * Image Container
+ * Handles aspect ratios and overflow for the player portrait.
+ */
 .player-card__image-wrapper {
 	position: relative;
 	aspect-ratio: 4 / 5;
@@ -46,7 +52,10 @@
 	transform: scale(1.05);
 }
 
-/* ===== Content ===== */
+/**
+ * Content
+ * Container for name and footer metadata.
+ */
 .player-card__content {
 	padding: 1.25rem;
 }
@@ -67,7 +76,10 @@
 	color: var(--color-secondary);
 }
 
-/* ===== Footer Grid ===== */
+/**
+ * Footer Grid
+ * Two-column layout for key statistics.
+ */
 .player-card__footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

@@ -4,6 +4,11 @@
  * @module Pagination
  */
 
+/**
+ * Pagination
+ * Flex container for page navigation controls.
+ */
+
 .pagination {
 	display: flex;
 	justify-content: center;

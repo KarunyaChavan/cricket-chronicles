@@ -1,4 +1,13 @@
-/* ===== Page Shell ===== */
+/**
+ * @file PlayerDetailPage.css
+ * @description Detailed layout and component styles for the Player Profile view.
+ * @module PlayerDetail
+ */
+
+/**
+ * Page Shell
+ * Base container and background for the detail view.
+ */
 .player-detail {
 	min-height: 100vh;
 	background: var(--color-surface);
@@ -9,7 +18,10 @@
 	overflow-x: hidden;
 }
 
-/* ===== Main Content ===== */
+/**
+ * Main Content
+ * Centered responsive wrapper for page content.
+ */
 .detail-main {
 	max-width: 1280px;
 	margin: 0 auto;
@@ -31,7 +43,10 @@
 	}
 }
 
-/* ===== Hero Section ===== */
+/**
+ * Hero Section
+ * Primary grid layout for the player picture, name, and aggregated statistics.
+ */
 .detail-hero {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -81,7 +96,10 @@
 	}
 }
 
-/* Image */
+/**
+ * Image Wrapper
+ * Handles aspect ratios and shadows for the player photo.
+ */
 .detail-hero__image-wrap {
 	aspect-ratio: 1 / 1;
 	border-radius: 12px;
@@ -103,7 +121,10 @@
 	}
 }
 
-/* Hero Info */
+/**
+ * Hero Info
+ * Container for name and badges.
+ */
 .detail-hero__info {
 	display: flex;
 	flex-direction: column;
@@ -128,7 +149,10 @@
 	margin: 0;
 }
 
-/* Hero Badges */
+/**
+ * Hero Badges
+ * Country and position labels.
+ */
 .detail-hero__badges {
 	display: flex;
 	flex-wrap: wrap;
@@ -156,7 +180,10 @@
 	color: #fff;
 }
 
-/* Team Logo in Badge */
+/**
+ * Team Badge
+ * Logos and names for team associations.
+ */
 .team-badge,
 .detail-teams__badge {
 	display: flex;
@@ -177,7 +204,10 @@
 	flex: 1;
 }
 
-/* Career Table Wrapper */
+/**
+ * Career Table Wrapper
+ * Enables horizontal scrolling for stats on small screens.
+ */
 .career-table-wrapper {
 	width: 100%;
 	overflow-x: auto;
@@ -191,7 +221,10 @@
 	min-width: 1000px;
 }
 
-/* Aggregate Stats Row */
+/**
+ * Aggregate Stats Row
+ * Horizontal summary stats in the hero section.
+ */
 .detail-hero__stats {
 	display: flex;
 	flex-wrap: wrap;
@@ -228,7 +261,10 @@
 	color: var(--color-secondary);
 }
 
-/* ===== Tab Bar ===== */
+/**
+ * Tab Bar
+ * Navigation between different stat views.
+ */
 .detail-tabs {
 	display: flex;
 	gap: 3rem;
@@ -297,7 +333,10 @@
 	}
 }
 
-/* ===== Stats Legend ===== */
+/**
+ * Stats Legend
+ * Sidebar explaining stat abbreviations.
+ */
 .stats-legend {
 	background: var(--color-surface-low);
 	border-radius: 12px;
@@ -346,7 +385,10 @@
 	font-weight: 500;
 }
 
-/* ===== Career Stats Section ===== */
+/**
+ * Career Stats Section
+ * Grouping for format-specific stat blocks.
+ */
 .detail-section-title {
 	font-family: var(--font-headline);
 	font-size: 1.375rem;
@@ -411,7 +453,10 @@
 	background: var(--color-surface-lowest);
 }
 
-/* ===== Profile Section ===== */
+/**
+ * Profile Section
+ * Tabular display of biographical data.
+ */
 .detail-profile {
 	background: var(--color-surface-lowest);
 	border-radius: 12px;
@@ -469,14 +514,20 @@
 	text-align: right;
 }
 
-/* ===== Sidebar ===== */
+/**
+ * Sidebar
+ * Additional info like teams and biography.
+ */
 .detail-sidebar {
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
 }
 
-/* Teams */
+/**
+ * Teams
+ * List of teams the player belongs to.
+ */
 .detail-teams {
 	background: var(--color-surface-low);
 	padding: 2rem;
@@ -512,7 +563,10 @@
 	color: var(--color-on-surface);
 }
 
-/* Bio */
+/**
+ * Bio
+ * Narrative description of the player's career.
+ */
 .detail-bio {
 	margin-top: 2rem;
 	padding: 0;

@@ -1,4 +1,13 @@
-/* ===== Base ===== */
+/**
+ * @file PlayersListingPage.css
+ * @description Directory layout for the Player Chronicles browsing experience.
+ * @module PlayersListing
+ */
+
+/**
+ * Base
+ * Root container styles for the listing page.
+ */
 .players-listing {
 	min-height: 100vh;
 	background: var(--color-surface);
@@ -6,14 +15,20 @@
 	color: var(--color-on-surface);
 }
 
-/* ===== Main Content ===== */
+/**
+ * Main Content
+ * Standardized page padding and width.
+ */
 .listing-main {
 	max-width: 1280px;
 	margin: 0 auto;
 	padding: 6rem 1.5rem 8rem;
 }
 
-/* ===== Editorial Header ===== */
+/**
+ * Editorial Header
+ * Stylized page title and search label.
+ */
 .listing-header {
 	margin-bottom: 2.5rem;
 }
@@ -63,7 +78,10 @@
 	color: var(--color-on-primary-container);
 }
 
-/* ===== Search ===== */
+/**
+ * Search
+ * Responsive search field container.
+ */
 .listing-search {
 	width: 100%;
 }
@@ -99,7 +117,10 @@
 	color: rgba(124, 131, 155, 0.6);
 }
 
-/* ===== Filter Chips ===== */
+/**
+ * Filter Chips
+ * Scrollable chip list for position-based filtering.
+ */
 .listing-filters {
 	margin-bottom: 2rem;
 }
@@ -163,7 +184,10 @@
 	background: var(--color-surface-container-high);
 }
 
-/* ===== Dropdowns ===== */
+/**
+ * Dropdowns
+ * Custom-styled selects for sorting and country/format filtering.
+ */
 .listing-dropdowns {
 	display: flex;
 	flex-direction: column;
@@ -206,7 +230,10 @@
 	box-shadow: 0 0 0 2px rgba(0, 110, 47, 0.15);
 }
 
-/* ===== Player Grid ===== */
+/**
+ * Player Grid
+ * Responsive grid for player summary cards.
+ */
 .player-grid {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -231,7 +258,10 @@
 	}
 }
 
-/* ===== States ===== */
+/**
+ * States
+ * Empty and loading state messaging.
+ */
 .no-results {
 	text-align: center;
 	color: var(--color-on-surface-variant);
