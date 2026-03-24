@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState, useEffect, useMemo, useCallback, Fragment } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
+import { usePlayerFilters } from './hooks/usePlayerFilters'
 import { playerService } from '../../api/sportmonks'
 import Header from '../../components/Header/Header'
 import Pagination from '../../components/Pagination'
@@ -15,79 +16,8 @@ const PER_PAGE = 12
 const POSITION_FILTERS = ['All', 'Batsman', 'Bowler', 'Allrounder']
 
 /**
- * Sorts an array of player objects based on a sort key.
- * @param {Array} data - Array of player objects
- * @param {string} sortKey - Sort key
- * @returns {Array} Sorted player array
- */
-const sortPlayers = (data, sortKey) =>
-	[...data].sort((a, b) => {
-		switch (sortKey) {
-			case 'firstNameAsc':
-				return (a.fullname || '').localeCompare(b.fullname || '')
-			case 'firstNameDesc':
-				return (b.fullname || '').localeCompare(a.fullname || '')
-			case 'idAsc':
-				return a.id - b.id
-			case 'idDesc':
-				return b.id - a.id
-			case 'updatedAtDesc':
-				return new Date(b.updated_at || 0) - new Date(a.updated_at || 0)
-			case 'updatedAtAsc':
-				return new Date(a.updated_at || 0) - new Date(b.updated_at || 0)
-			default:
-				return 0
-		}
-	})
-
-/**
- * Filters players by last name (case-insensitive).
- * @param {Array} data - All players
- * @param {string} query - Last name query string
- * @returns {Array} Filtered players
- */
-const filterByLastName = (data, query) => {
-	if (!query || query.trim().length === 0) return data
-	const q = query.trim().toLowerCase()
-	return data.filter((p) => (p.lastname || '').toLowerCase().includes(q))
-}
-
-/**
- * Filters players by position name.
- * @param {Array} data - All players
- * @param {string} position - Position name or 'All'
- * @returns {Array} Filtered players
- */
-const filterByPosition = (data, position) => {
-	if (!position || position === 'All') return data
-	return data.filter((p) => (p.position?.name || '').toLowerCase() === position.toLowerCase())
-}
-
-/**
- * Filters players by country name.
- * @param {Array} data - All players
- * @param {string} country - Country name or 'All'
- * @returns {Array} Filtered players
- */
-const filterByCountry = (data, country) => {
-	if (!country || country === 'All') return data
-	return data.filter((p) => (p.country?.name || '') === country)
-}
-
-/**
- * Filters players by career tournament type.
- * @param {Array} data - All players
- * @param {string} type - Tournament type or 'All'
- * @returns {Array} Filtered players
- */
-const filterByCareerType = (data, type) => {
-	if (!type || type === 'All') return data
-	return data.filter((p) => (p.careerTypes || []).includes(type))
-}
-
-/**
  * Players listing page — fetches all players once, then filters/sorts/paginates client-side.
- * @returns {JSX.Element} The rendered listings page
+ * @returns {JSX.Element} The rendered listings page.
  */
 const PlayersListingPage = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
@@ -101,7 +31,6 @@ const PlayersListingPage = () => {
 	const urlCareerType = searchParams.get('career_type') || 'All'
 
 	const [inputValue, setInputValue] = useState(urlSearch)
-
 	const navigate = useNavigate()
 
 	const {
@@ -115,32 +44,22 @@ const PlayersListingPage = () => {
 			const response = await playerService.getPlayers({ include: 'country,career', signal })
 			const rawData = response.data || []
 
-			// Transform data directly in queryFn as requested
-			return rawData.map((p) => {
-				const stripped = {
-					id: p.id,
-					fullname: p.fullname,
-					lastname: p.lastname,
-					image_path: p.image_path,
-					dateofbirth: p.dateofbirth || null,
-					updated_at: p.updated_at || null,
-					careerTypes: p.career ? [...new Set(p.career.map((c) => c.type))] : [],
-				}
-				if (p.country?.name) {
-					stripped.country = { name: p.country.name }
-				}
-				if (p.position?.name) {
-					stripped.position = { name: p.position.name }
-				}
-				return stripped
-			})
+			return rawData.map((p) => ({
+				id: p.id,
+				fullname: p.fullname,
+				lastname: p.lastname,
+				image_path: p.image_path,
+				dateofbirth: p.dateofbirth || null,
+				updated_at: p.updated_at || null,
+				careerTypes: p.career ? [...new Set(p.career.map((c) => c.type))] : [],
+				country: p.country?.name ? { name: p.country.name } : null,
+				position: p.position?.name ? { name: p.position.name } : null,
+			}))
 		},
 		staleTime: 1000 * 60 * 60, // 1 hour
 	})
 
-	const error = isError
-		? queryError?.message || 'Failed to load players. Please try again later.'
-		: ''
+	const error = isError ? queryError?.message || 'Failed to load players.' : ''
 
 	/** Debounce search query into URL */
 	useEffect(() => {
@@ -159,26 +78,18 @@ const PlayersListingPage = () => {
 		return () => clearTimeout(handler)
 	}, [inputValue, setSearchParams, urlSearch])
 
-	/** Sync input value if URL changes via back navigation */
 	useEffect(() => {
 		setInputValue(urlSearch)
 	}, [urlSearch])
 
-	/** Derived: filter by country → filter by position → filter by last name → sort */
-	const filteredSorted = useMemo(
-		() =>
-			sortPlayers(
-				filterByLastName(
-					filterByPosition(
-						filterByCountry(filterByCareerType(allPlayers, urlCareerType), urlCountry),
-						urlPosition,
-					),
-					urlSearch,
-				),
-				urlSort,
-			),
-		[allPlayers, urlSearch, urlSort, urlPosition, urlCountry, urlCareerType],
-	)
+	/** Derived filtering and sorting via custom hook */
+	const filteredSorted = usePlayerFilters(allPlayers, {
+		search: urlSearch,
+		sort: urlSort,
+		position: urlPosition,
+		country: urlCountry,
+		careerType: urlCareerType,
+	})
 
 	const uniqueCountries = useMemo(() => {
 		const countries = new Set()
@@ -191,9 +102,7 @@ const PlayersListingPage = () => {
 	const uniqueCareerTypes = useMemo(() => {
 		const types = new Set()
 		allPlayers.forEach((p) => {
-			if (p.careerTypes) p.careerTypes.forEach((t) => {
-				if (t && t.trim()) types.add(t)
-			})
+			if (p.careerTypes) p.careerTypes.forEach((t) => t && types.add(t))
 		})
 		return ['All', ...Array.from(types).sort()]
 	}, [allPlayers])
@@ -211,76 +120,22 @@ const PlayersListingPage = () => {
 		return filteredSorted.slice(start, start + urlPerPage)
 	}, [filteredSorted, urlPage, urlPerPage])
 
-	const handlePositionFilter = useCallback(
-		(position) => {
+	const handleFilterChange = useCallback(
+		(name, value) => {
 			setSearchParams((prev) => {
-				if (position === 'All') prev.delete('position')
-				else prev.set('position', position)
-				prev.set('page', '1')
+				if (value === 'All') prev.delete(name)
+				else prev.set(name, value)
+				if (name !== 'page') prev.set('page', '1')
 				return prev
 			})
 		},
 		[setSearchParams],
-	)
-
-	const handleSortChange = useCallback(
-		(e) => {
-			setSearchParams((prev) => {
-				prev.set('sort', e.target.value)
-				prev.set('page', '1')
-				return prev
-			})
-		},
-		[setSearchParams],
-	)
-
-	const handleCountryChange = useCallback(
-		(e) => {
-			setSearchParams((prev) => {
-				if (e.target.value === 'All') prev.delete('country')
-				else prev.set('country', e.target.value)
-				prev.set('page', '1')
-				return prev
-			})
-		},
-		[setSearchParams],
-	)
-
-	const handleCareerTypeChange = useCallback(
-		(e) => {
-			setSearchParams((prev) => {
-				if (e.target.value === 'All') prev.delete('career_type')
-				else prev.set('career_type', e.target.value)
-				prev.set('page', '1')
-				return prev
-			})
-		},
-		[setSearchParams],
-	)
-
-	const handlePageChange = useCallback(
-		(page) => {
-			setSearchParams((prev) => {
-				prev.set('page', page.toString())
-				return prev
-			})
-		},
-		[setSearchParams],
-	)
-
-	const handlePlayerClick = useCallback(
-		(id) => {
-			navigate(`/player/${id}`)
-		},
-		[navigate],
 	)
 
 	return (
 		<div className="players-listing">
 			<Header />
-
 			<main className="listing-main">
-				{/* Editorial Header + Search */}
 				<section className="listing-header">
 					<div className="listing-header__row">
 						<div>
@@ -297,28 +152,25 @@ const PlayersListingPage = () => {
 								placeholder="Search by last name..."
 								value={inputValue}
 								onChange={(e) => setInputValue(e.target.value)}
-								aria-label="Search players by last name"
+								aria-label="Search players"
 							/>
 						</div>
 					</div>
 				</section>
 
-				{/* Position Filter Chips & Selectors */}
-				<section className="listing-filters" aria-label="Filters and Sorting">
+				<section className="listing-filters">
 					<div className="listing-filters__row">
 						{POSITION_FILTERS.map((pos, idx) => (
 							<Fragment key={pos}>
-								{idx === 1 && <div key="divider" className="listing-filters__divider" />}
+								{idx === 1 && <div className="listing-filters__divider" />}
 								<button
-									key={pos}
 									type="button"
 									className={`listing-filter-chip ${
-										urlPosition === pos || (pos === 'All' && urlPosition === 'All')
+										urlPosition === pos
 											? 'listing-filter-chip--active'
 											: 'listing-filter-chip--inactive'
 									}`}
-									onClick={() => handlePositionFilter(pos)}
-									aria-pressed={urlPosition === pos || (pos === 'All' && urlPosition === 'All')}
+									onClick={() => handleFilterChange('position', pos)}
 								>
 									{pos === 'All' ? 'SHOW ALL' : pos === 'Allrounder' ? 'All-rounder' : pos}
 								</button>
@@ -329,9 +181,8 @@ const PlayersListingPage = () => {
 					<div className="listing-dropdowns">
 						<select
 							value={urlSort}
-							onChange={handleSortChange}
+							onChange={(e) => handleFilterChange('sort', e.target.value)}
 							className="listing-dropdowns__select"
-							aria-label="Sort players"
 						>
 							<option value="idAsc">Sort by ID (Low to High)</option>
 							<option value="idDesc">Sort by ID (High to Low)</option>
@@ -342,9 +193,8 @@ const PlayersListingPage = () => {
 						</select>
 						<select
 							value={urlCountry}
-							onChange={handleCountryChange}
+							onChange={(e) => handleFilterChange('country', e.target.value)}
 							className="listing-dropdowns__select"
-							aria-label="Filter by country"
 						>
 							{uniqueCountries.map((c) => (
 								<option key={c} value={c}>
@@ -354,9 +204,8 @@ const PlayersListingPage = () => {
 						</select>
 						<select
 							value={urlCareerType}
-							onChange={handleCareerTypeChange}
+							onChange={(e) => handleFilterChange('career_type', e.target.value)}
 							className="listing-dropdowns__select"
-							aria-label="Filter by tournament type"
 						>
 							{uniqueCareerTypes.map((t) => (
 								<option key={t} value={t}>
@@ -367,10 +216,8 @@ const PlayersListingPage = () => {
 					</div>
 				</section>
 
-				{/* Error */}
 				{error && <div className="error-message">{error}</div>}
 
-				{/* Content */}
 				{isLoading ? (
 					<div className="loading-spinner" />
 				) : (
@@ -379,17 +226,16 @@ const PlayersListingPage = () => {
 							<div className="no-results">No players found matching your criteria.</div>
 						) : (
 							<div className="player-grid">
-								{players.map((player) => (
-									<PlayerCard key={player.id} player={player} onClick={handlePlayerClick} />
+								{players.map((p) => (
+									<PlayerCard key={p.id} player={p} onClick={(id) => navigate(`/player/${id}`)} />
 								))}
 							</div>
 						)}
-
 						{totalPages > 1 && (
 							<Pagination
 								currentPage={urlPage}
 								totalPages={totalPages}
-								onPageChange={handlePageChange}
+								onPageChange={(page) => handleFilterChange('page', page.toString())}
 							/>
 						)}
 					</>
