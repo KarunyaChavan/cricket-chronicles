@@ -1,37 +1,8 @@
-/**
- * @file PlayerDetailPage.css
- * @description Styles for the detailed player view, including hero section, stats tables, and bio sidebar.
- * @module PlayerDetail
- */
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
-
-/* ===== Design Tokens ===== */
-:root {
-	--color-primary: #0f172a;
-	--color-secondary: #006e2f;
-	--color-surface: #faf8ff;
-	--color-surface-lowest: #fff;
-	--color-surface-low: #f2f3ff;
-	--color-surface-container: #eaedff;
-	--color-surface-container-high: #e2e7ff;
-	--color-surface-container-highest: #dae2fd;
-	--color-on-surface: #131b2e;
-	--color-on-surface-variant: #45464d;
-	--color-on-primary: #fff;
-	--color-on-primary-container: #7c839b;
-	--color-outline-variant: #c6c6cd;
-	--color-secondary-gradient-start: #006e2f;
-	--color-secondary-gradient-end: #6bff8f;
-	--font-headline: 'Plus Jakarta Sans', sans-serif;
-	--font-body: 'Inter', sans-serif;
-}
-
 /* ===== Page Shell ===== */
 .player-detail {
 	min-height: 100vh;
 	background: var(--color-surface);
-	font-family: var(--font-body);
+	font-family: var(--font-body, sans-serif);
 	color: var(--color-on-surface);
 	padding-bottom: 6rem;
 	width: 100%;
@@ -68,7 +39,42 @@
 	align-items: flex-start;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 1023px) {
+	.detail-hero {
+		grid-template-columns: repeat(4, 1fr);
+		gap: 2rem;
+	}
+
+	.detail-hero__image-wrap {
+		grid-column: span 2;
+		grid-row: 1;
+	}
+
+	.detail-hero__info {
+		display: contents;
+	}
+
+	.detail-hero__header {
+		grid-column: span 2;
+		grid-row: 1;
+		align-self: center;
+	}
+
+	.detail-hero__stats {
+		grid-column: span 2;
+		grid-row: 2;
+		margin-bottom: 0;
+	}
+
+	.detail-bio {
+		grid-column: span 2;
+		grid-row: 2;
+		margin-top: 0;
+		padding-top: 0;
+	}
+}
+
+@media (min-width: 1024px) {
 	.detail-hero {
 		grid-template-columns: 5fr 7fr;
 		gap: 2.5rem;
@@ -91,12 +97,24 @@
 	transition: filter 0.7s ease;
 }
 
+@media (min-width: 1024px) {
+	.detail-hero__image-wrap {
+		aspect-ratio: 1/1.2;
+	}
+}
+
 /* Hero Info */
 .detail-hero__info {
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
 	padding-bottom: 1rem;
+}
+
+@media (min-width: 1440px) {
+	.detail-hero__info {
+		margin-top: 4rem;
+	}
 }
 
 .detail-hero__name {
@@ -551,35 +569,7 @@
 	letter-spacing: 0.1em;
 }
 
-/* ===== Loading / Error / Not Found ===== */
-.loading-spinner {
-	width: 2.5rem;
-	height: 2.5rem;
-	border: 3px solid var(--color-surface-container);
-	border-top-color: var(--color-secondary);
-	border-radius: 50%;
-	animation: spin 0.7s linear infinite;
-	margin: 6rem auto;
-}
-
-@keyframes spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-.error-message {
-	padding: 1rem 1.5rem;
-	background: #ffdad6;
-	color: #93000a;
-	border-radius: 8px;
-	margin: 2rem auto;
-	max-width: 640px;
-	text-align: center;
-	font-size: 0.875rem;
-	font-weight: 600;
-}
-
+/* ===== States ===== */
 .no-results {
 	text-align: center;
 	color: var(--color-on-surface-variant);

@@ -11,8 +11,9 @@
 	right: 0;
 	z-index: 100;
 	background: rgba(255, 255, 255, 0.85);
+	background-color: var(--color-surface-lowest);
 	backdrop-filter: blur(20px);
-	border-bottom: 1px solid rgba(198, 198, 205, 0.1);
+	border-bottom: 1px solid var(--color-outline-variant);
 	height: 4.5rem;
 	display: flex;
 	align-items: center;

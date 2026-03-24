@@ -4,20 +4,6 @@
  * @module PlayerCard
  */
 
-/* ===== Design Tokens ===== */
-:root {
-	--color-primary: #0f172a;
-	--color-secondary: #006e2f;
-	--color-surface-lowest: #fff;
-	--color-surface-low: #f2f3ff;
-	--color-surface-container: #eaedff;
-	--color-surface-container-high: #e2e7ff;
-	--color-on-surface: #131b2e;
-	--color-on-surface-variant: #45464d;
-	--color-on-primary-container: #7c839b;
-	--color-outline-variant: #c6c6cd;
-}
-
 /* ===== Player Card ===== */
 .player-card {
 	position: relative;
