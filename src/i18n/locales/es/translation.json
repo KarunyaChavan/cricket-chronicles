@@ -1,0 +1,101 @@
+{
+	"app": {
+		"title": "Jugadores de Cricket",
+		"subtitle": "Descubre las leyendas del juego",
+		"changeLanguage": "Cambiar idioma",
+        "back": "Atrás"
+	},
+	"players": {
+		"searchHolder": "Buscar por apellido...",
+        "headerTitle": "CRÓNICAS",
+        "headerSubtitle": "DE JUGADORES",
+		"archives": "Los Archivos",
+        "searchAndFilter": "Buscar: \"{{query}}\" • {{filters}}",
+        "searchOnly": "Buscar: \"{{query}}\"",
+        "showingFilters": "Mostrando: {{filters}}",
+		"filters": {
+			"country": "Todos los Países",
+			"position": "Todas las Posiciones",
+			"showAll": "MOSTRAR TODO",
+			"allrounder": "Todo Terreno",
+			"batsman": "Bateador",
+			"bowler": "Lanzador",
+			"formats": "Todos los Formatos"
+		},
+		"sort": {
+			"label": "Ordenar por",
+			"firstNameAsc": "Ordenar por Nombre (A-Z)",
+			"firstNameDesc": "Ordenar por Nombre (Z-A)",
+			"idAsc": "Ordenar por ID (Bajo a Alto)",
+			"idDesc": "Ordenar por ID (Alto a Bajo)",
+			"updatedAtDesc": "Actualizado Recientemente (Más Nuevo)",
+			"updatedAtAsc": "Actualizado Recientemente (Más Viejo)"
+		},
+		"notFound": "No se encontraron jugadores que coincidan con tus criterios.",
+        "position": "Posición",
+        "dob": "Fecha de Nacimiento",
+        "noStats": "No hay estadísticas disponibles.",
+        "bioTitle": "Biografía del Jugador"
+	},
+	"pagination": {
+		"previous": "Anterior",
+		"next": "Siguiente",
+		"page": "Página {{current}} de {{total}}"
+	},
+	"error": {
+		"fetch": "Error al cargar jugadores. Por favor, inténtalo de nuevo más tarde."
+	},
+    "stats": {
+        "matches": "Partidos",
+        "runs": "Carreras",
+        "avg": "Prom",
+        "4s": "4s",
+        "6s": "6s",
+        "wickets": "Wickets",
+        "econ": "Econ",
+        "bsr": "B.SR",
+        "careerTitle": "Estadísticas de Carrera",
+        "noData": "No hay datos de carrera disponibles."
+    },
+    "glossary": {
+        "title": "Glosario",
+        "inn": "Entradas Jugadas",
+        "bf": "Bolas Enfrentadas",
+        "boundaries": "Límites",
+        "hs": "Puntuación Más Alta",
+        "avg": "Promedio",
+        "sr": "Tasa de Golpeo",
+        "wkts": "Wickets Tomados",
+        "mdn": "Overs Inaugurales",
+        "econ": "Tasa de Economía",
+        "bsr": "Tasa de Golpeo de Bolos"
+    },
+    "bio": {
+        "fullName": "Nombre Completo",
+        "gender": "Género",
+        "country": "País",
+        "dob": "Fecha de Nacimiento",
+        "position": "Posición",
+        "batting": "Estilo de Bateo",
+        "bowling": "Estilo de Bolos"
+    },
+    "tabs": {
+        "stats": "Estadísticas",
+        "bio": "Biografía",
+        "teams": "Equipos"
+    },
+    "detail": {
+        "share": "Compartir Perfil"
+    },
+    "teams": {
+        "title": "Equipos",
+        "noInfo": "No hay información de equipo disponible."
+    },
+	"loader": {
+		"phrase1": "Preparando el campo...",
+		"phrase2": "Reuniendo las escuadras...",
+		"phrase3": "Calculando estadísticas de carrera...",
+		"phrase4": "Revisando los historiales de los partidos...",
+		"phrase5": "Finalizando las crónicas de los jugadores..."
+	}
+}

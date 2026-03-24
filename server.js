@@ -26,7 +26,8 @@ const PORT = process.env.PORT || 3000
 const API_TOKEN = process.env.SPORTMONKS_API_TOKEN || ''
 
 if (!API_TOKEN) {
-	console.warn('WARNING: SPORTMONKS_API_TOKEN is not set in the environment.')
+	console.error('FATAL ERROR: SPORTMONKS_API_TOKEN is not set in the environment. Exiting.')
+	process.exit(1)
 }
 
 /**

@@ -22,7 +22,10 @@ For developers and engineers, this project demonstrates a modern frontend stack 
 For production-grade security, we implement a **BFF Architecture** using Express.js. This prevents the `SPORTMONKS_API_TOKEN` from being exposed in client-side bundles. The server acts as a secure middleware that injects the required tokens server-side.
 
 
-### 2. Core Tech Stack
+### 2. Client-Side Pagination & Data Hydration
+Due to upstream API restrictions on bulk pagination flexibility, the application operates strictly on a **client-side pagination** and filtering model. We fetch a heavily optimized payload of the core player demographic, natively map it to discard heavy irrelevant JSON nodes, and perform the matrix filtering and index slicing locally via React Hooks. This guarantees absolute zero-latency text searching and faceted filtering without risking remote network timeouts or IndexedDB overflow limits.
+
+### 3. Core Tech Stack
 - **Frontend**: React + Vite + i18next (Internationalization)
 - **Server**: Express.js + http-proxy-middleware
 - **API**: Sportmonks Cricket API

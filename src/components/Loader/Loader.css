@@ -1,0 +1,154 @@
+/**
+ * @file Loader.css
+ * @description Styles for the immersive progressive loading animation.
+ */
+
+.immersive-loader {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 50vh;
+	width: 100%;
+	padding: 2rem;
+}
+
+.immersive-loader__animation {
+	position: relative;
+	width: 60px;
+	height: 100px;
+	margin-bottom: 2rem;
+}
+
+.cricket-ball {
+	width: 40px;
+	height: 40px;
+	background: radial-gradient(circle at 30% 30%, #ff4b4b, #b30000);
+	border-radius: 50%;
+	position: absolute;
+	left: 10px;
+	animation: bounce 0.6s cubic-bezier(0.5, 0.05, 1, 0.5) infinite alternate;
+	box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Cricket ball seam */
+.cricket-ball::after {
+	content: '';
+	position: absolute;
+	top: -2px;
+	bottom: -2px;
+	left: 50%;
+	width: 2px;
+	background: #fff;
+	opacity: 0.6;
+	border-left: 2px dotted #fff;
+	transform: translateX(-50%) rotate(15deg);
+}
+
+.cricket-shadow {
+	width: 40px;
+	height: 8px;
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 50%;
+	position: absolute;
+	bottom: 0;
+	left: 10px;
+	animation: scale-shadow 0.6s cubic-bezier(0.5, 0.05, 1, 0.5) infinite alternate;
+}
+
+@keyframes bounce {
+	0% {
+		top: 0;
+	}
+
+	100% {
+		top: 60px;
+		height: 36px;
+		border-radius: 50% 50% 40% 40%;
+	}
+}
+
+@keyframes scale-shadow {
+	0% {
+		transform: scale(1);
+		opacity: 0.2;
+	}
+
+	100% {
+		transform: scale(0.4);
+		opacity: 0.6;
+	}
+}
+
+.immersive-loader__text-wrapper {
+	height: 2rem;
+	overflow: hidden;
+	margin-bottom: 2.5rem;
+}
+
+.immersive-loader__text {
+	font-family: var(--font-headline, 'Plus Jakarta Sans', sans-serif);
+	font-size: 1.125rem;
+	color: var(--color-on-surface-variant, #45464d);
+	font-weight: 600;
+	animation: fade-slide 5.5s ease-in-out infinite;
+	text-align: center;
+}
+
+@keyframes fade-slide {
+	0% {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+
+	10% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	90% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+}
+
+.immersive-loader__progress-bar {
+	width: 100%;
+	max-width: 320px;
+	height: 6px;
+	background: var(--color-surface-container-highest, #dae2fd);
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.immersive-loader__progress-fill {
+	height: 100%;
+	background: var(--color-secondary, #006e2f);
+	width: 0%;
+
+	/* Simulates 30s async hydration with asymptotic easing */
+	animation: progress-fill 30s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+@keyframes progress-fill {
+	0% {
+		width: 0%;
+	}
+
+	30% {
+		width: 60%;
+	}
+
+	80% {
+		width: 90%;
+	}
+
+	100% {
+		width: 98%;
+	}
+}

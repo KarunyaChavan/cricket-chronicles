@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState, useEffect, useMemo, useCallback, Fragment } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { usePlayerFilters } from './hooks/usePlayerFilters'
 import { playerService } from '../../api/sportmonks'
 import Header from '../../components/Header/Header'
+import Loader from '../../components/Loader'
 import Pagination from '../../components/Pagination'
 import PlayerCard from '../../components/PlayerCard'
 import './PlayersListingPage.css'
@@ -20,6 +22,7 @@ const POSITION_FILTERS = ['All', 'Batsman', 'Bowler', 'Allrounder']
  * @returns {JSX.Element} The rendered listings page.
  */
 const PlayersListingPage = () => {
+	const { t } = useTranslation()
 	const [searchParams, setSearchParams] = useSearchParams()
 
 	const urlSearch = searchParams.get('search') || ''
@@ -59,7 +62,7 @@ const PlayersListingPage = () => {
 		staleTime: 1000 * 60 * 60, // 1 hour
 	})
 
-	const error = isError ? queryError?.message || 'Failed to load players.' : ''
+	const error = isError ? queryError?.message || t('error.fetch', 'Failed to load players.') : ''
 
 	/** Debounce search query into URL */
 	useEffect(() => {
@@ -112,6 +115,18 @@ const PlayersListingPage = () => {
 		[filteredSorted.length, urlPerPage],
 	)
 
+	useEffect(() => {
+		if (filteredSorted.length > 0 && urlPage > totalPages) {
+			setSearchParams(
+				(prev) => {
+					prev.set('page', totalPages.toString())
+					return prev
+				},
+				{ replace: true },
+			)
+		}
+	}, [filteredSorted.length, urlPage, totalPages, setSearchParams])
+
 	const players = useMemo(() => {
 		const start = (urlPage - 1) * urlPerPage
 		if (start >= filteredSorted.length && filteredSorted.length > 0) {
@@ -134,126 +149,156 @@ const PlayersListingPage = () => {
 
 	const activeFiltersTexts = []
 	if (urlPosition !== 'All') {
-		activeFiltersTexts.push(urlPosition === 'Allrounder' ? 'All-rounder' : urlPosition)
+		activeFiltersTexts.push(
+			urlPosition === 'Allrounder'
+				? t('players.filters.allrounder', 'All-rounder')
+				: t(`players.filters.${urlPosition.toLowerCase()}`, urlPosition),
+		)
 	}
 	if (urlCountry !== 'All') activeFiltersTexts.push(urlCountry)
 	if (urlCareerType !== 'All') activeFiltersTexts.push(urlCareerType)
 
-	let headerLabel = 'The Archives'
+	let headerLabel = t('players.archives', 'The Archives')
 	if (urlSearch && activeFiltersTexts.length > 0) {
-		headerLabel = `Search: "${urlSearch}" • ${activeFiltersTexts.join(' • ')}`
+		headerLabel = t('players.searchAndFilter', 'Search: "{{query}}" • {{filters}}', {
+			query: urlSearch,
+			filters: activeFiltersTexts.join(' • '),
+		})
 	} else if (urlSearch) {
-		headerLabel = `Search: "${urlSearch}"`
+		headerLabel = t('players.searchOnly', 'Search: "{{query}}"', { query: urlSearch })
 	} else if (activeFiltersTexts.length > 0) {
-		headerLabel = `Showing: ${activeFiltersTexts.join(' • ')}`
+		headerLabel = t('players.showingFilters', 'Showing: {{filters}}', {
+			filters: activeFiltersTexts.join(' • '),
+		})
 	}
 
 	return (
 		<div className="players-listing">
 			<Header />
 			<main className="listing-main">
-				<section className="listing-header">
-					<div className="listing-header__row">
-						<div>
-							<span className="listing-header__label">{headerLabel}</span>
-							<p className="listing-header__title">
-								PLAYER <span className="listing-header__title-muted">CHRONICLES</span>
-							</p>
-						</div>
-						<form
-							className="listing-search"
-							onSubmit={(e) => {
-								e.preventDefault()
-								setSearchParams(
-									(prev) => {
-										if (inputValue) prev.set('search', inputValue)
-										else prev.delete('search')
-										prev.set('page', '1')
-										return prev
-									},
-									{ replace: true },
-								)
-							}}
-						>
-							<input
-								id="player-search"
-								type="search"
-								className="listing-search__input"
-								placeholder="Search by last name..."
-								value={inputValue}
-								onChange={(e) => setInputValue(e.target.value)}
-								aria-label="Search players"
-							/>
-						</form>
-					</div>
-				</section>
-
-				<section className="listing-filters">
-					<div className="listing-filters__row">
-						{POSITION_FILTERS.map((pos, idx) => (
-							<Fragment key={pos}>
-								{idx === 1 && <div className="listing-filters__divider" />}
-								<button
-									type="button"
-									className={`listing-filter-chip ${
-										urlPosition === pos
-											? 'listing-filter-chip--active'
-											: 'listing-filter-chip--inactive'
-									}`}
-									onClick={() => handleFilterChange('position', pos)}
-								>
-									{pos === 'All' ? 'SHOW ALL' : pos === 'Allrounder' ? 'All-rounder' : pos}
-								</button>
-							</Fragment>
-						))}
-					</div>
-
-					<div className="listing-dropdowns">
-						<select
-							value={urlSort}
-							onChange={(e) => handleFilterChange('sort', e.target.value)}
-							className="listing-dropdowns__select"
-						>
-							<option value="idAsc">Sort by ID (Low to High)</option>
-							<option value="idDesc">Sort by ID (High to Low)</option>
-							<option value="firstNameAsc">Sort by Name (A-Z)</option>
-							<option value="firstNameDesc">Sort by Name (Z-A)</option>
-							<option value="updatedAtDesc">Recently Updated (Newest)</option>
-							<option value="updatedAtAsc">Recently Updated (Oldest)</option>
-						</select>
-						<select
-							value={urlCountry}
-							onChange={(e) => handleFilterChange('country', e.target.value)}
-							className="listing-dropdowns__select"
-						>
-							{uniqueCountries.map((c) => (
-								<option key={c} value={c}>
-									{c === 'All' ? 'All Countries' : c}
-								</option>
-							))}
-						</select>
-						<select
-							value={urlCareerType}
-							onChange={(e) => handleFilterChange('career_type', e.target.value)}
-							className="listing-dropdowns__select"
-						>
-							{uniqueCareerTypes.map((t) => (
-								<option key={t} value={t}>
-									{t === 'All' ? 'All Formats' : t}
-								</option>
-							))}
-						</select>
-					</div>
-				</section>
-
-				{error && <div className="error-message">{error}</div>}
-
 				{isLoading ? (
-					<div className="loading-spinner" />
+					<Loader />
 				) : (
 					<>
+						<section className="listing-header">
+							<div className="listing-header__row">
+								<div>
+									<span className="listing-header__label">{headerLabel}</span>
+									<p className="listing-header__title">
+										{t('players.headerTitle', 'PLAYER')}{' '}
+										<span className="listing-header__title-muted">
+											{t('players.headerSubtitle', 'CHRONICLES')}
+										</span>
+									</p>
+								</div>
+								<form
+									className="listing-search"
+									onSubmit={(e) => {
+										e.preventDefault()
+										setSearchParams(
+											(prev) => {
+												if (inputValue) prev.set('search', inputValue)
+												else prev.delete('search')
+												prev.set('page', '1')
+												return prev
+											},
+											{ replace: true },
+										)
+									}}
+								>
+									<input
+										id="player-search"
+										type="search"
+										className="listing-search__input"
+										placeholder={t('players.searchHolder', 'Search by last name...')}
+										value={inputValue}
+										onChange={(e) => setInputValue(e.target.value)}
+										aria-label="Search players"
+									/>
+								</form>
+							</div>
+						</section>
+
+						<section className="listing-filters">
+							<div className="listing-filters__row">
+								{POSITION_FILTERS.map((pos, idx) => (
+									<Fragment key={pos}>
+										{idx === 1 && <div className="listing-filters__divider" />}
+										<button
+											type="button"
+											className={`listing-filter-chip ${
+												urlPosition === pos
+													? 'listing-filter-chip--active'
+													: 'listing-filter-chip--inactive'
+											}`}
+											onClick={() => handleFilterChange('position', pos)}
+										>
+											{pos === 'All'
+												? t('players.filters.showAll', 'SHOW ALL')
+												: pos === 'Allrounder'
+													? t('players.filters.allrounder', 'All-rounder')
+													: t(`players.filters.${pos.toLowerCase()}`, pos)}
+										</button>
+									</Fragment>
+								))}
+							</div>
+
+							<div className="listing-dropdowns">
+								<select
+									value={urlSort}
+									onChange={(e) => handleFilterChange('sort', e.target.value)}
+									className="listing-dropdowns__select"
+								>
+									<option value="idAsc">
+										{t('players.sort.idAsc', 'Sort by ID (Low to High)')}
+									</option>
+									<option value="idDesc">
+										{t('players.sort.idDesc', 'Sort by ID (High to Low)')}
+									</option>
+									<option value="firstNameAsc">
+										{t('players.sort.firstNameAsc', 'Sort by Name (A-Z)')}
+									</option>
+									<option value="firstNameDesc">
+										{t('players.sort.firstNameDesc', 'Sort by Name (Z-A)')}
+									</option>
+									<option value="updatedAtDesc">
+										{t('players.sort.updatedAtDesc', 'Recently Updated (Newest)')}
+									</option>
+									<option value="updatedAtAsc">
+										{t('players.sort.updatedAtAsc', 'Recently Updated (Oldest)')}
+									</option>
+								</select>
+								<select
+									value={urlCountry}
+									onChange={(e) => handleFilterChange('country', e.target.value)}
+									className="listing-dropdowns__select"
+								>
+									{uniqueCountries.map((c) => (
+										<option key={c} value={c}>
+											{c === 'All' ? t('players.filters.country', 'All Countries') : c}
+										</option>
+									))}
+								</select>
+								<select
+									value={urlCareerType}
+									onChange={(e) => handleFilterChange('career_type', e.target.value)}
+									className="listing-dropdowns__select"
+								>
+									{uniqueCareerTypes.map((type) => (
+										<option key={type} value={type}>
+											{type === 'All' ? t('players.filters.formats', 'All Formats') : type}
+										</option>
+									))}
+								</select>
+							</div>
+						</section>
+
+						{error && <div className="error-message">{error}</div>}
+
 						{players.length === 0 && !error ? (
-							<div className="no-results">No players found matching your criteria.</div>
+							<div className="no-results">
+								{t('players.notFound', 'No players found matching your criteria.')}
+							</div>
 						) : (
 							<div className="player-grid">
 								{players.map((p) => (

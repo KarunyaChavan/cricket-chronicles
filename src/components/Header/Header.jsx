@@ -4,6 +4,7 @@
  * @module Header
  */
 
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import './Header.css'
 
@@ -15,6 +16,7 @@ import './Header.css'
  */
 const Header = ({ showBackButton = false }) => {
 	const navigate = useNavigate()
+	const { t, i18n } = useTranslation()
 
 	return (
 		<header className="app-header">
@@ -27,7 +29,7 @@ const Header = ({ showBackButton = false }) => {
 							type="button"
 							aria-label="Go back to previous page"
 						>
-							← Back
+							← {t('app.back', 'Back')}
 						</button>
 					)}
 				</div>
@@ -37,8 +39,15 @@ const Header = ({ showBackButton = false }) => {
 					</Link>
 				</div>
 				<div className="app-header__right">
-					{/* Placeholder for future actions */}
-					<span />
+					<select
+						className="app-header__lang"
+						value={i18n.language?.split('-')[0] || 'en'}
+						onChange={(e) => i18n.changeLanguage(e.target.value)}
+						aria-label={t('app.changeLanguage', 'Change language')}
+					>
+						<option value="en">English</option>
+						<option value="es">Español</option>
+					</select>
 				</div>
 			</div>
 		</header>

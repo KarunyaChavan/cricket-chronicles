@@ -74,3 +74,23 @@
 	display: flex;
 	justify-content: flex-end;
 }
+
+.app-header__lang {
+	background: transparent;
+	border: 1px solid var(--color-outline-variant, #c6c6cd);
+	border-radius: 4px;
+	padding: 0.25rem 0.5rem;
+	font-family: var(--font-body, 'Inter', sans-serif);
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--color-on-surface, #1a1c1e);
+	cursor: pointer;
+	text-transform: uppercase;
+	outline: none;
+	transition: border-color 0.2s;
+}
+
+.app-header__lang:hover,
+.app-header__lang:focus {
+	border-color: var(--color-primary, #0f172a);
+}

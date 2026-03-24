@@ -4,6 +4,7 @@ import { initReactI18next } from 'react-i18next'
 
 import { config } from '../config'
 import enTranslation from './locales/en/translation.json'
+import esTranslation from './locales/es/translation.json'
 
 i18n
 	// detect user language
@@ -15,6 +16,9 @@ i18n
 		resources: {
 			en: {
 				translation: enTranslation,
+			},
+			es: {
+				translation: esTranslation,
 			},
 		},
 		fallbackLng: config.app.defaultLanguage,

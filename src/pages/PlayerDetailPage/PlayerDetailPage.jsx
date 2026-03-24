@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 import CareerStats from './components/CareerStats'
@@ -46,6 +47,7 @@ const TABS = ['Stats', 'Bio', 'Teams']
  */
 const PlayerDetailPage = () => {
 	const { id } = useParams()
+	const { t } = useTranslation()
 	const [activeTab, setActiveTab] = useState('Stats')
 
 	const {
@@ -114,7 +116,7 @@ const PlayerDetailPage = () => {
 							onClick={() => setActiveTab(tab)}
 							type="button"
 						>
-							{tab}
+							{t(`tabs.${tab.toLowerCase()}`, tab)}
 						</button>
 					))}
 				</div>
@@ -136,7 +138,7 @@ const PlayerDetailPage = () => {
 					}
 				}}
 			>
-				<span className="detail-fab__label">Share Profile</span>
+				<span className="detail-fab__label">{t('detail.share', 'Share Profile')}</span>
 			</button>
 		</div>
 	)
