@@ -67,5 +67,5 @@ app.get('*', (req, res) => {
 })
 
 app.listen(PORT, () => {
-	console.log(`🚀 BFF Proxy server running on http://localhost:${PORT}`)
+	console.log(`BFF Proxy server running on http://localhost:${PORT}`)
 })
