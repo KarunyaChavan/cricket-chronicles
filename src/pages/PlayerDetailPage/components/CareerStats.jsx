@@ -87,8 +87,15 @@ const CareerStats = ({ career, careerTypes }) => {
 }
 
 CareerStats.propTypes = {
-	career: PropTypes.array.isRequired,
-	careerTypes: PropTypes.array.isRequired,
+	career: PropTypes.arrayOf(
+		PropTypes.shape({
+			type: PropTypes.string,
+			seasonid: PropTypes.number,
+			batting: PropTypes.object,
+			bowling: PropTypes.object,
+		}),
+	).isRequired,
+	careerTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
 
 export default CareerStats

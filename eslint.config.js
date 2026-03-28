@@ -71,7 +71,7 @@ export default [
 			'no-duplicate-imports': 'error',
 
 			// React Specific
-			'react/prop-types': 'off',
+			'react/prop-types': 'error',
 			'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 
 			// JSDoc

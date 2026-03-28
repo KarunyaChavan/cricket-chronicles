@@ -38,7 +38,11 @@ const buildBio = (player) => {
 	return sentence
 }
 
-const TABS = ['Stats', 'Bio', 'Teams']
+const TABS = [
+	{ key: 'stats', label: 'Stats' },
+	{ key: 'bio', label: 'Bio' },
+	{ key: 'teams', label: 'Teams' },
+]
 
 /**
  * Player Detail Page Component
@@ -48,7 +52,7 @@ const TABS = ['Stats', 'Bio', 'Teams']
 const PlayerDetailPage = () => {
 	const { id } = useParams()
 	const { t } = useTranslation()
-	const [activeTab, setActiveTab] = useState('Stats')
+	const [activeTab, setActiveTab] = useState('stats')
 
 	const {
 		data: player = null,
@@ -109,23 +113,23 @@ const PlayerDetailPage = () => {
 				<div className="detail-tabs" role="tablist">
 					{TABS.map((tab) => (
 						<button
-							key={tab}
+							key={tab.key}
 							role="tab"
-							aria-selected={activeTab === tab}
-							className={`detail-tab ${activeTab === tab ? 'detail-tab--active' : ''}`}
-							onClick={() => setActiveTab(tab)}
+							aria-selected={activeTab === tab.key}
+							className={`detail-tab ${activeTab === tab.key ? 'detail-tab--active' : ''}`}
+							onClick={() => setActiveTab(tab.key)}
 							type="button"
 						>
-							{t(`tabs.${tab.toLowerCase()}`, tab)}
+							{t(`tabs.${tab.key}`, tab.label)}
 						</button>
 					))}
 				</div>
 
-				{activeTab === 'Stats' && <CareerStats career={player.career} careerTypes={careerTypes} />}
+				{activeTab === 'stats' && <CareerStats career={player.career} careerTypes={careerTypes} />}
 
-				{activeTab === 'Bio' && <ProfileBio player={player} />}
+				{activeTab === 'bio' && <ProfileBio player={player} />}
 
-				{activeTab === 'Teams' && <TeamList teams={uniqueTeams} />}
+				{activeTab === 'teams' && <TeamList teams={uniqueTeams} />}
 			</main>
 
 			<button

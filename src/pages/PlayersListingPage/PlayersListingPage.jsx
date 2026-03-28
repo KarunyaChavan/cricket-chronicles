@@ -248,6 +248,7 @@ const PlayersListingPage = () => {
 									value={urlSort}
 									onChange={(e) => handleFilterChange('sort', e.target.value)}
 									className="listing-dropdowns__select"
+									aria-label={t('players.sort.label', 'Sort players')}
 								>
 									<option value="idAsc">
 										{t('players.sort.idAsc', 'Sort by ID (Low to High)')}
@@ -272,6 +273,7 @@ const PlayersListingPage = () => {
 									value={urlCountry}
 									onChange={(e) => handleFilterChange('country', e.target.value)}
 									className="listing-dropdowns__select"
+									aria-label={t('players.filters.countryLabel', 'Filter by country')}
 								>
 									{uniqueCountries.map((c) => (
 										<option key={c} value={c}>
@@ -283,6 +285,7 @@ const PlayersListingPage = () => {
 									value={urlCareerType}
 									onChange={(e) => handleFilterChange('career_type', e.target.value)}
 									className="listing-dropdowns__select"
+									aria-label={t('players.filters.formatLabel', 'Filter by format')}
 								>
 									{uniqueCareerTypes.map((type) => (
 										<option key={type} value={type}>

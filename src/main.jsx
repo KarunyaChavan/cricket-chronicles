@@ -28,6 +28,7 @@ const persister = createAsyncStoragePersister({
 				await set(key, value)
 			} catch (err) {
 				console.error('IDB set error', err)
+				throw err
 			}
 		},
 		removeItem: async (key) => await del(key),

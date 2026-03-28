@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
 import './Pagination.css'
 
@@ -31,6 +32,12 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 			</button>
 		</nav>
 	)
+}
+
+Pagination.propTypes = {
+	currentPage: PropTypes.number.isRequired,
+	totalPages: PropTypes.number.isRequired,
+	onPageChange: PropTypes.func.isRequired,
 }
 
 export default Pagination

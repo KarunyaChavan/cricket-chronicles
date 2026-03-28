@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
 import './PlayerCard.css'
 
@@ -56,6 +57,17 @@ const PlayerCard = ({ player, onClick }) => {
 			</div>
 		</button>
 	)
+}
+
+PlayerCard.propTypes = {
+	player: PropTypes.shape({
+		id: PropTypes.number.isRequired,
+		fullname: PropTypes.string.isRequired,
+		image_path: PropTypes.string,
+		position: PropTypes.shape({ name: PropTypes.string }),
+		dateofbirth: PropTypes.string,
+	}).isRequired,
+	onClick: PropTypes.func.isRequired,
 }
 
 export default PlayerCard

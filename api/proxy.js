@@ -14,9 +14,10 @@ export default async function handler(req, res) {
 	const fullUrl = req.url || ''
 	const apiPath = fullUrl.startsWith('/api') ? fullUrl.replace(/^\/api/, '') : fullUrl
 
-	const targetUrl = new URL(`https://cricket.sportmonks.com/api/v2.0${apiPath}`)
+	const baseUrl = process.env.SPORTMONKS_BASE_URL
+	const targetUrl = new URL(`${baseUrl}${apiPath}`)
 
-	const token = process.env.SPORTMONKS_API_TOKEN || process.env.VITE_SPORTMONKS_API_TOKEN
+	const token = process.env.SPORTMONKS_API_TOKEN
 	if (token) {
 		targetUrl.searchParams.set('api_token', token)
 	}
@@ -36,7 +37,7 @@ export default async function handler(req, res) {
 		console.error('Vercel Proxy Error:', error)
 		return res.status(500).json({
 			error: 'Internal Server Error',
-			message: error.message,
+			message: 'An unexpected error occurred. Please try again later.',
 		})
 	}
 }

@@ -4,6 +4,7 @@
  * @module Header
  */
 
+import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import './Header.css'
@@ -52,6 +53,10 @@ const Header = ({ showBackButton = false }) => {
 			</div>
 		</header>
 	)
+}
+
+Header.propTypes = {
+	showBackButton: PropTypes.bool,
 }
 
 export default Header
