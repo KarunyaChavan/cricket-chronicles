@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { getOptimizedImageUrl } from '../../../utils/formatters'
+
 /**
  * Renders the top hero section of the player detail page.
  * @param {object} props - Component props.
@@ -65,7 +67,7 @@ const DetailHero = ({ player, overallStats }) => {
 		<section className="detail-hero">
 			<div className="detail-hero__image-wrap">
 				<img
-					src={player.image_path || '/placeholder-player.svg'}
+					src={getOptimizedImageUrl(player.image_path, 1080, 85)}
 					alt={player.fullname}
 					className="detail-hero__image"
 					onError={(e) => {
