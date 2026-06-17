@@ -3,24 +3,26 @@
 		"title": "Cricket Players",
 		"subtitle": "Discover the legends of the game",
 		"changeLanguage": "Change language",
-        "back": "Back"
+		"back": "Back"
 	},
 	"players": {
 		"searchHolder": "Search by last name...",
-        "headerTitle": "PLAYER",
-        "headerSubtitle": "CHRONICLES",
+		"headerTitle": "PLAYER",
+		"headerSubtitle": "CHRONICLES",
 		"archives": "The Archives",
-        "searchAndFilter": "Search: \"{{query}}\" • {{filters}}",
-        "searchOnly": "Search: \"{{query}}\"",
-        "showingFilters": "Showing: {{filters}}",
+		"searchAndFilter": "Search: \"{{query}}\" • {{filters}}",
+		"searchOnly": "Search: \"{{query}}\"",
+		"showingFilters": "Showing: {{filters}}",
 		"filters": {
 			"country": "All Countries",
+			"countryLabel": "Filter by country",
 			"position": "All Positions",
 			"showAll": "SHOW ALL",
 			"allrounder": "All-rounder",
 			"batsman": "Batsman",
 			"bowler": "Bowler",
-			"formats": "All Formats"
+			"formats": "All Formats",
+			"formatLabel": "Filter by format"
 		},
 		"sort": {
 			"label": "Sort by",
@@ -32,10 +34,10 @@
 			"updatedAtAsc": "Recently Updated (Oldest)"
 		},
 		"notFound": "No players found matching your criteria.",
-        "position": "Position",
-        "dob": "Date of Birth",
-        "noStats": "No stats available.",
-        "bioTitle": "Player Bio"
+		"position": "Position",
+		"dob": "Date of Birth",
+		"noStats": "No stats available.",
+		"bioTitle": "Player Bio"
 	},
 	"pagination": {
 		"previous": "Previous",
@@ -45,52 +47,52 @@
 	"error": {
 		"fetch": "Failed to load players. Please try again later."
 	},
-    "stats": {
-        "matches": "Matches",
-        "runs": "Runs",
-        "avg": "Avg",
-        "4s": "4s",
-        "6s": "6s",
-        "wickets": "Wickets",
-        "econ": "Econ",
-        "bsr": "B.SR",
-        "careerTitle": "Career Statistics",
-        "noData": "No career data available."
-    },
-    "glossary": {
-        "title": "Glossary",
-        "inn": "Innings Played",
-        "bf": "Balls Faced",
-        "boundaries": "Boundaries",
-        "hs": "Highest Score",
-        "avg": "Average",
-        "sr": "Strike Rate",
-        "wkts": "Wickets Taken",
-        "mdn": "Maiden Overs",
-        "econ": "Economy Rate",
-        "bsr": "Bowling SR"
-    },
-    "bio": {
-        "fullName": "Full Name",
-        "gender": "Gender",
-        "country": "Country",
-        "dob": "Date of Birth",
-        "position": "Position",
-        "batting": "Batting Style",
-        "bowling": "Bowling Style"
-    },
-    "tabs": {
-        "stats": "Stats",
-        "bio": "Bio",
-        "teams": "Teams"
-    },
-    "detail": {
-        "share": "Share Profile"
-    },
-    "teams": {
-        "title": "Teams",
-        "noInfo": "No team information available."
-    },
+	"stats": {
+		"matches": "Matches",
+		"runs": "Runs",
+		"avg": "Avg",
+		"4s": "4s",
+		"6s": "6s",
+		"wickets": "Wickets",
+		"econ": "Econ",
+		"bsr": "B.SR",
+		"careerTitle": "Career Statistics",
+		"noData": "No career data available."
+	},
+	"glossary": {
+		"title": "Glossary",
+		"inn": "Innings Played",
+		"bf": "Balls Faced",
+		"boundaries": "Boundaries",
+		"hs": "Highest Score",
+		"avg": "Average",
+		"sr": "Strike Rate",
+		"wkts": "Wickets Taken",
+		"mdn": "Maiden Overs",
+		"econ": "Economy Rate",
+		"bsr": "Bowling SR"
+	},
+	"bio": {
+		"fullName": "Full Name",
+		"gender": "Gender",
+		"country": "Country",
+		"dob": "Date of Birth",
+		"position": "Position",
+		"batting": "Batting Style",
+		"bowling": "Bowling Style"
+	},
+	"tabs": {
+		"stats": "Stats",
+		"bio": "Bio",
+		"teams": "Teams"
+	},
+	"detail": {
+		"share": "Share Profile"
+	},
+	"teams": {
+		"title": "Teams",
+		"noInfo": "No team information available."
+	},
 	"loader": {
 		"phrase1": "Preparing the pitch...",
 		"phrase2": "Assembling the squads...",
