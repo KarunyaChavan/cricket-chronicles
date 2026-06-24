@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
+
+import { getOptimizedImageUrl } from '../../utils/formatters'
 import './PlayerCard.css'
 
 /**
@@ -30,7 +32,7 @@ const PlayerCard = ({ player, onClick }) => {
 		>
 			<div className="player-card__image-wrapper">
 				<img
-					src={image_path || '/placeholder-player.svg'}
+					src={getOptimizedImageUrl(image_path, 256, 75)}
 					alt={fullname}
 					className="player-card__image"
 					loading="lazy"

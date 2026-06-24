@@ -38,3 +38,21 @@ export const formatValue = (value) => {
 	if (Number.isInteger(num)) return num.toString()
 	return num.toFixed(2)
 }
+
+/**
+ * Returns an optimized image URL for Vercel, or the original path for local development.
+ * @param {string} imagePath - Original image path.
+ * @param {number} width - Desired width for optimization.
+ * @param {number} quality - Desired quality for optimization.
+ * @returns {string} The optimized or original image URL.
+ */
+export const getOptimizedImageUrl = (imagePath, width = 256, quality = 75) => {
+	if (!imagePath) return '/placeholder-player.svg'
+	const isLocalhost =
+		typeof window !== 'undefined' &&
+		['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+	if (import.meta.env.PROD && !isLocalhost) {
+		return `/_vercel/image?url=${encodeURIComponent(imagePath)}&w=${width}&q=${quality}`
+	}
+	return imagePath
+}

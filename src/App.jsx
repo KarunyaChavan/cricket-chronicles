@@ -1,7 +1,8 @@
+import { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 
-import PlayerDetailPage from './pages/PlayerDetailPage'
-import PlayersListingPage from './pages/PlayersListingPage'
+const PlayerDetailPage = lazy(() => import('./pages/PlayerDetailPage'))
+const PlayersListingPage = lazy(() => import('./pages/PlayersListingPage'))
 
 /**
  * Minimal 404 fallback shown for unknown routes.
@@ -21,11 +22,13 @@ const NotFound = () => (
 function App() {
 	return (
 		<Router>
-			<Routes>
-				<Route path="/" element={<PlayersListingPage />} />
-				<Route path="/player/:id" element={<PlayerDetailPage />} />
-				<Route path="*" element={<NotFound />} />
-			</Routes>
+			<Suspense fallback={<div>Loading...</div>}>
+				<Routes>
+					<Route path="/" element={<PlayersListingPage />} />
+					<Route path="/player/:id" element={<PlayerDetailPage />} />
+					<Route path="*" element={<NotFound />} />
+				</Routes>
+			</Suspense>
 		</Router>
 	)
 }
