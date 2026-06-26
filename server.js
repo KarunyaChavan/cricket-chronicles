@@ -11,6 +11,8 @@ import dotenv from 'dotenv'
 import express from 'express'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 
+import { apiLimiter, generalLimiter } from './api/rateLimiter.js'
+
 /**
  * Load environment variables.
  * Supports .env.local for local production testing.
@@ -33,7 +35,9 @@ if (!API_TOKEN) {
 /**
  * BFF Proxy Route.
  * Forward all `/api` requests to Sportmonks API and inject token server-side.
+ * Rate-limited to protect upstream Sportmonks quota.
  */
+app.use('/api', apiLimiter)
 app.use(
 	'/api',
 	createProxyMiddleware({
@@ -61,8 +65,9 @@ app.use(express.static(distPath))
 /**
  * Catch-all route to serve index.html for React Router.
  * This ensures that SPA routing works correctly on page refreshes.
+ * Rate-limited to prevent excessive page reloads or scraping.
  */
-app.get('*', (req, res) => {
+app.get('*', generalLimiter, (req, res) => {
 	res.sendFile(path.join(distPath, 'index.html'))
 })
 
