@@ -7,7 +7,11 @@
 
 import rateLimit from 'express-rate-limit'
 
-const isEnabled = () => process.env.RATE_LIMIT_ENABLED !== 'false'
+const parseEnabled = () => {
+	const val = (process.env.RATE_LIMIT_ENABLED || '').trim().toLowerCase()
+	if (val === '') return true
+	return !['false', '0', 'off', 'no', 'disabled'].includes(val)
+}
 
 const ONE_MINUTE = 60 * 1000
 const FIFTEEN_MINUTES = 15 * ONE_MINUTE
@@ -37,7 +41,7 @@ const createHandler = (limiterName) => (_req, res) => {
 export const apiLimiter = rateLimit({
 	windowMs: parseMs(process.env.RATE_LIMIT_API_WINDOW_MS, FIFTEEN_MINUTES),
 	max: parseMax(process.env.RATE_LIMIT_API_MAX, 100),
-	skip: () => !isEnabled(),
+	skip: () => !parseEnabled(),
 	handler: createHandler('API'),
 	standardHeaders: true,
 	legacyHeaders: false,
@@ -50,7 +54,7 @@ export const apiLimiter = rateLimit({
 export const generalLimiter = rateLimit({
 	windowMs: parseMs(process.env.RATE_LIMIT_GENERAL_WINDOW_MS, FIFTEEN_MINUTES),
 	max: parseMax(process.env.RATE_LIMIT_GENERAL_MAX, 1000),
-	skip: () => !isEnabled(),
+	skip: () => !parseEnabled(),
 	handler: createHandler('General'),
 	standardHeaders: true,
 	legacyHeaders: false,
