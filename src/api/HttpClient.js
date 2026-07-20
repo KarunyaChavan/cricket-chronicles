@@ -54,7 +54,7 @@ class HttpClient {
 		} catch (error) {
 			if (error.name === 'AbortError') throw error // Rethrow to let useQuery handle it quietly
 
-			console.error(`HttpClient GET Error [${endpoint}]:`, error.message, '| URL:', finalUrl)
+			console.error('HttpClient GET Error [%s]: %s | URL: %s', endpoint, error.message, finalUrl)
 			throw error
 		}
 	}
